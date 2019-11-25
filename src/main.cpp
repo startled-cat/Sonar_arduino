@@ -1,7 +1,7 @@
 #include <Servo.h>
 #include "Arduino.h"
 
-#define SERVO_STOPTIME 50
+#define SERVO_STOPTIME 200
 #define SONAR_STOPTIME 100
 
 #define RED_LED 2
@@ -10,15 +10,17 @@
 #define TRIGGRER 7
 #define ECHO 6
 
-#define MEASUREMENTS 3
-
 Servo myservo;
 int pos = 0;
-int inc = 1;
-unsigned long m[MEASUREMENTS];
+int BigInc = 30;
+int SmallInc = 1;
+int dec = 0;
+int CountJumps = 0;
+int volatile Measurements = 1;
+bool GetNumber = true;
 
 unsigned long measure();
-void print();
+void print(int Measurements, unsigned long m[]);
 void print_all();
 
 void setup() {
@@ -27,53 +29,61 @@ void setup() {
 	
 	//pinMode(MOSFET, OUTPUT);
 	pinMode(RED_LED, OUTPUT);
-	pos = 190;//myservo.read();
-	
-	
+	pos = 0;//190;//myservo.read();
 }
 
 void loop() {
-	if(pos > 180){
+	if (GetNumber) {
+		while (!Serial.available()) {}
+		char UserInput = Serial.read();
+
+		if (UserInput == '2' || UserInput == '3') {
+			Measurements = UserInput - '0';
+		}
+
+		GetNumber = false;
+	}
+
+	unsigned long m[Measurements];
+
+	myservo.write(pos);  
+	delay(SERVO_STOPTIME); 	
+	
+	for (int i = 0; i < Measurements; i++) {
+		unsigned long temp = measure();
+		if (temp < 15*58) {
+			i--;
+			continue;
+		} else {
+			m[i] = temp;
+		}
+		delay(50); 
+	}
+	
+	print(Measurements, m);
+
+	if (pos >= 180) {
 		myservo.write(0);
 		digitalWrite(RED_LED,HIGH);
 		delay(1000);
 		int bytes = 0;
-		do{
+		do {
 			bytes = Serial.read();
 			Serial.write(bytes);
-		}while(bytes <= 0);
+		} while(bytes <= 0);
 		digitalWrite(RED_LED,LOW);
 		pos = 0;
-	}
-	
-	myservo.write(pos);  
-	delay(SERVO_STOPTIME);    
-	
-	for(int i = 0; i < MEASUREMENTS; i++){
-		unsigned long temp = measure();
-		if(temp < 15*58){
-			i--;
-			continue;
-		}else{
-			m[i] = temp;
-		}
-		
-	}
-	
-	print();
+	}	
 
-	pos += inc;
-	/*
-	if(pos >= 180){
-		inc = -1;
+	pos += BigInc;
+	CountJumps++; 
 
-	}else if(pos <= 0){
-		inc = 1;
+	if (CountJumps > 5) {
+		pos = 0;
+		pos += SmallInc;
+		SmallInc += 1;
+		CountJumps = 0;
 	}
-	*/
-	
-	//delay(50);
-  
 }
 
 unsigned long measure() { 
@@ -86,9 +96,10 @@ unsigned long measure() {
 	//width of the reflected pulse in the uS divided by 58 is the distance in centimeters - see the documentation 
 	return pulseIn(ECHO, HIGH);
 } 
-void print(){
+
+void print(int Measurements, unsigned long m[]) {
 	Serial.print(pos); 
-	for(int i = 0; i < MEASUREMENTS; i++){
+	for (int i = 0; i < Measurements; i++) {
 		Serial.print(",");
 		Serial.print(m[i]);
 	}
