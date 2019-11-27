@@ -134,6 +134,7 @@ class Ui_MainWindow(QMainWindow):
     def setupLater(self):
         print("setupLater ... ")
         self.filename = ''
+        self.data = {}
         
         self.openButton.clicked.connect(lambda: self.openFile())
         self.saveButton.clicked.connect(lambda: self.saveFile())
@@ -169,8 +170,9 @@ class Ui_MainWindow(QMainWindow):
 
     def analyze(self):
         print("analyze...")
+        self.old_create_graph(self.data)
 
-    def analyze(self):
+    def start(self):
         print("starting...")
         self.startButton.setEnabled(False)
         seq = []
@@ -295,6 +297,100 @@ class Ui_MainWindow(QMainWindow):
         if self.filename:
             with open(self.filename, "rt") as file:
                 self.openLabel.setText("opened: " + self.filename)
+                file_reader = csv.reader(file, delimiter=',')
+                for row in file_reader:
+                    #self.data.append(float(row[1]))
+                    self.data[int(row[0])]=float(row[1])
+                    print("reading: " + str(row[0]) + " > " + str(row[1]))
+        self.analyzeButton.setEnabled(True)
+        print(self.data)
+                
+
+
+    
+    def old_save(data):
+        DIR = os.getcwd() + "\\data"
+        names = os.listdir(DIR)
+
+        index = len(names)
+        index += 1
+
+        with open(DIR + "\\data" + str(index) + ".csv", 'w', newline='') as file:
+            angle = 0
+            file = csv.writer(file, delimiter=',')
+            for element in data:
+                file.writerow([str(angle), str(element)])
+                angle += 1
+
+
+    def old_read(filename):
+        DIR = os.getcwd() + os.path.sep
+        with open(DIR + filename) as file:
+            data = []
+            file_reader = csv.reader(file, delimiter=',')
+            for row in file_reader:
+                data.append(float(row[1]))
+                
+        return data
+    
+    def old_create_graph(self, data):
+        fig = plt.figure(figsize=(10, 5))
+        ax = fig.add_subplot()
+        # Move left y-axis and bottom x-axis to centre, passing through (0,0)
+        ax.spines['left'].set_position('center')
+        ax.spines['bottom'].set_position('center')
+        # Eliminate upper and right axes
+        ax.spines['right'].set_color('none')
+        ax.spines['top'].set_color('none')
+        # Show ticks in the left and lower axes only
+        ax.xaxis.set_ticks_position('bottom')
+        ax.yaxis.set_ticks_position('left')
+        y = []
+        x = []
+        # Initialize with no points, and circle markers, return Line2D object
+        li, = ax.plot(x, y, '.')
+        # Set default axis in range of -100 to 100
+        # plt.axis([-200, 200, -200, 200])
+        axes = plt.gca()
+        axes.set_xlim([-400, 400])
+        axes.set_ylim([0, 400])
+
+        ax.spines['left'].set_position(('data', 0))
+        ax.spines['bottom'].set_position(('data', 0))
+        # Interactive plot ON
+        # plt.ion()
+
+        # for key, value in self.data_dict.items():
+        # print(data)
+        # i = 0
+        # while i < 180:
+        #     print(str(i) + " > " + str(data.get(i)))
+
+        #     #x.append()
+        #     i += 1
+
+        
+        i = 0
+        while i <= 180 :
+            print("i = " + str(i) + "value = " + str(data.get(i)))
+            y.append(math.sin(math.radians(i)) * (data.get(i)))
+            x.append(math.cos(math.radians(i)) * (data.get(i)))
+            i += 1
+
+        
+
+        # i = 0
+        # while i < 180:
+        #     y.append(math.sin(math.radians(i)) * data.get(i))
+        #     x.append(math.cos(math.radians(i)) * data.get(i))
+        #     # print(y)
+        #     # print(x)
+        #     # plt.pause(0.1)
+        #     i += 1
+
+        li.set_ydata(y)
+        li.set_xdata(x)
+        plt.show()
 
 if __name__ == "__main__":
     import sys
