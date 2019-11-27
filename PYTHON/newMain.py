@@ -9,7 +9,10 @@ import serial
 import time
 import statistics
 import math
+import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
+
 import csv
 import os
 
@@ -171,6 +174,7 @@ class Ui_MainWindow(QMainWindow):
     def analyze(self):
         print("analyze...")
         self.create_image(self.data)
+        self.old_create_graph(self.data)
 
     def start(self):
         print("starting...")
@@ -393,19 +397,30 @@ class Ui_MainWindow(QMainWindow):
         plt.show()
 
     def create_image(self, data):
-        w, h = 18, 20
+        w, h = 180, 400
         img = [[0 for x in range(w)] for y in range(h)] 
+        img = np.zeros((h, w))
+        
         
         #print(img)
         i = 0
-        while i < 180 :
+        while i < w :
             value = int(data.get(i))
             if value >= h : value = h-1
             
             print("set: " +str(i) + ", " + str(value) + " to 1" )
-            img[i][value] = 1
+            img[value:, i] = 1
             i = i+1
         print(img)
+
+        fig = plt.figure(figsize=(10,10))
+        ax = fig.add_subplot()
+        axes = plt.gca()
+        axes.set_xlim([0, 180])
+        axes.set_ylim([0, 400])
+
+        plt.imshow(img)
+        #plt.show()
 
 
         matplotlib.image.imsave('name.png', img)
