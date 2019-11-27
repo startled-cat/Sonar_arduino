@@ -393,19 +393,19 @@ class Ui_MainWindow(QMainWindow):
         plt.show()
 
     def create_image(self, data):
-        img = [[]]
-        x = 180
-        y = 400
+        w, h = 18, 20
+        img = [[0 for x in range(w)] for y in range(h)] 
         
-        print(img)
+        #print(img)
         i = 0
         while i < 180 :
             value = int(data.get(i))
-            img[i][:value] = 1
+            if value >= h : value = h-1
+            
+            print("set: " +str(i) + ", " + str(value) + " to 1" )
+            img[i][value] = 1
+            i = i+1
         print(img)
-
-
-
 
 
         matplotlib.image.imsave('name.png', img)
