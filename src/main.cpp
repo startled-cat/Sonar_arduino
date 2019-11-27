@@ -48,8 +48,9 @@ void loop() {
 
 	myservo.write(pos);  
 	delay(SERVO_STOPTIME); 	
-	
+	delay(700);  
 	for (int i = 0; i < Measurements; i++) {
+		
 		unsigned long temp = measure();
 		if (temp < 15*58) {
 			i--;
@@ -57,7 +58,7 @@ void loop() {
 		} else {
 			m[i] = temp;
 		}
-		delay(50); 
+		delay(200);
 	}
 	
 	print(Measurements, m);
