@@ -170,7 +170,7 @@ class Ui_MainWindow(QMainWindow):
 
     def analyze(self):
         print("analyze...")
-        self.old_create_graph(self.data)
+        self.create_image(self.data)
 
     def start(self):
         print("starting...")
@@ -391,6 +391,24 @@ class Ui_MainWindow(QMainWindow):
         li.set_ydata(y)
         li.set_xdata(x)
         plt.show()
+
+    def create_image(self, data):
+        img = [[]]
+        x = 180
+        y = 400
+        
+        print(img)
+        i = 0
+        while i < 180 :
+            value = int(data.get(i))
+            img[i][:value] = 1
+        print(img)
+
+
+
+
+
+        matplotlib.image.imsave('name.png', img)
 
 if __name__ == "__main__":
     import sys
