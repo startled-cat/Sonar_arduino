@@ -9,7 +9,7 @@ import csv
 import os
 
 ser = serial.Serial(
-    port='COM4',\
+    port='COM3',\
     baudrate=9600,\
     parity=serial.PARITY_NONE,\
     stopbits=serial.STOPBITS_ONE,\
@@ -37,7 +37,7 @@ else:
 
 measurements = int(measurements)
 
-m = [180]
+m = [0]*181
 
 time.sleep(3)
 
@@ -72,7 +72,6 @@ def create_graph(data):
     # for key, value in self.data_dict.items():
     
     i = 0
-
     while i < 180:
         y.append(math.sin(math.radians(i)) * data[i])
         x.append(math.cos(math.radians(i)) * data[i])
@@ -136,9 +135,10 @@ while True:
                     distance.append(int(data[i+1]) / 58.2)
                     i += 1
                 print("angle: " + str(angle) + "; " + str(distance))
-                m.insert(angle, statistics.median(distance))
+                m[angle] = statistics.median(distance);
                 if angle == 180:
                     print("creating graph ... ")
+
                     create_graph(m)
                     save(m)
                     print("done!")
