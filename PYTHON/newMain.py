@@ -40,16 +40,24 @@ class Ui_MainWindow(QMainWindow):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.displayGraphButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        
+
         self.displayGraphButton.setObjectName("displayGraphButton")
         self.horizontalLayout.addWidget(self.displayGraphButton)
         self.saveGraphButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        
+
         self.saveGraphButton.setObjectName("saveGraphButton")
         self.horizontalLayout.addWidget(self.saveGraphButton)
         self.displayImageButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.displayImageButton.setObjectName("displayImageButton")
+        
+        
         self.horizontalLayout.addWidget(self.displayImageButton)
         self.saveImageButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.saveImageButton.setObjectName("saveImageButton")
+        
+
         self.horizontalLayout.addWidget(self.saveImageButton)
         self.gridLayout.addLayout(self.horizontalLayout, 4, 2, 1, 1)
         self.saveButton = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -143,10 +151,12 @@ class Ui_MainWindow(QMainWindow):
 
         self.connectButton.clicked.connect(lambda: self.connect())
         self.startButton.clicked.connect(lambda: self.start())
+
+        self.setAnalyzeButtons(False)
         
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Sonar"))
         self.displayGraphButton.setText(_translate("MainWindow", "Display graph"))
         self.saveGraphButton.setText(_translate("MainWindow", "Save graph"))
         self.displayImageButton.setText(_translate("MainWindow", "Display img"))
@@ -161,6 +171,12 @@ class Ui_MainWindow(QMainWindow):
         self.radio2.setText(_translate("MainWindow", "3"))
         self.connectLabel.setText(_translate("MainWindow", "Ready..."))
         self.connectButton.setText(_translate("MainWindow", "Connect to Arduino"))
+
+    def setAnalyzeButtons(self, state):
+        self.displayGraphButton.setEnabled(state)
+        self.saveGraphButton.setEnabled(state)
+        self.displayImageButton.setEnabled(state)
+        self.saveImageButton.setEnabled(state)
 
     def exit(self):
         print("exiting...")
@@ -308,6 +324,7 @@ class Ui_MainWindow(QMainWindow):
         
         #print(self.data)
         self.saveButton.setEnabled(True)
+        self.setAnalyzeButtons(True)
                 
     def old_save(data):
         DIR = os.getcwd() + "\\data"
@@ -385,17 +402,13 @@ class Ui_MainWindow(QMainWindow):
             img[:value, i] = 1
             i = i+1
         
-
-
         if display : 
-            fig = plt.figure(figsize=(10,10))
-            ax = fig.add_subplot()
-            axes = plt.gca()
-            axes.set_xlim([0, 180])
 
-            #this flips image vertically (only for plot)
-            axes.set_ylim([0, 400])
-            plt.imshow(img)
+            fig, ax = plt.subplots()
+            ax.set_xlabel("angle [°]")
+            ax.set_ylabel("distance [cm]")
+            ax.set_ylim([0, 400])
+            plt.imshow(img, cmap='gray', vmin=0, vmax=1)
             plt.show()
         else:
             #flip vertically before saving 
