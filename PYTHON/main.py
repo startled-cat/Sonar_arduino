@@ -135,7 +135,7 @@ while True:
                     distance.append(int(data[i+1]) / 58.2)
                     i += 1
                 print("angle: " + str(angle) + "; " + str(distance))
-                m[angle] = statistics.median(distance);
+                m[angle] = statistics.median(distance)
                 if angle == 180:
                     print("creating graph ... ")
 
