@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'main.ui'
-#
-# Created by: PyQt5 UI code generator 5.13.2
-#
-# WARNING! All changes made in this file will be lost!
+from PIL import Image
+import PIL
 import serial
 import time
 import statistics
 import math
+import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
+
 import csv
 import os
 
@@ -23,65 +21,86 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 
 
-
 class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(450, 340)
-        
-        
+        MainWindow.setObjectName("Sonar")
+        MainWindow.resize(480, 342)
+
+        self.MainWindow = MainWindow
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 421, 284))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 460, 284))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
-
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-
-        self.openButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.openButton.setObjectName("openButton")
-        self.gridLayout.addWidget(self.openButton, 2, 0, 1, 1)
-
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.displayGraphButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         
 
+        self.displayGraphButton.setObjectName("displayGraphButton")
+        self.horizontalLayout.addWidget(self.displayGraphButton)
+        self.saveGraphButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        
+
+        self.saveGraphButton.setObjectName("saveGraphButton")
+        self.horizontalLayout.addWidget(self.saveGraphButton)
+        self.displayImageButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.displayImageButton.setObjectName("displayImageButton")
+        
+        
+        self.horizontalLayout.addWidget(self.displayImageButton)
+        self.saveImageButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.saveImageButton.setObjectName("saveImageButton")
+        
+
+        self.horizontalLayout.addWidget(self.saveImageButton)
+        self.gridLayout.addLayout(self.horizontalLayout, 4, 2, 1, 1)
         self.saveButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.saveButton.setEnabled(False)
         self.saveButton.setObjectName("saveButton")
         self.gridLayout.addWidget(self.saveButton, 4, 0, 1, 1)
-
+        self.openButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.openButton.setObjectName("openButton")
+        self.gridLayout.addWidget(self.openButton, 2, 0, 1, 1)
         self.exitButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.exitButton.setObjectName("exitButton")
-        self.gridLayout.addWidget(self.exitButton, 6, 0, 1, 1)
-
+        self.gridLayout.addWidget(self.exitButton, 7, 0, 1, 1)
         self.startButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        #self.startButton.setEnabled(False)
+        self.startButton.setEnabled(False)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.startButton.sizePolicy().hasHeightForWidth())
+        self.startButton.setSizePolicy(sizePolicy)
+        self.startButton.setBaseSize(QtCore.QSize(0, 0))
+        self.startButton.setCheckable(False)
+        self.startButton.setChecked(False)
         self.startButton.setObjectName("startButton")
         self.gridLayout.addWidget(self.startButton, 1, 0, 1, 1)
-
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
-
         self.label = QtWidgets.QLabel(self.gridLayoutWidget)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
-
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
+        self.horizontalLayout_2.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.radio1 = QtWidgets.QRadioButton(self.gridLayoutWidget)
         self.radio1.setObjectName("radio1")
-        self.verticalLayout.addWidget(self.radio1)
-
+        self.horizontalLayout_2.addWidget(self.radio1)
         self.radio3 = QtWidgets.QRadioButton(self.gridLayoutWidget)
         self.radio3.setChecked(True)
         self.radio3.setObjectName("radio3")
-        self.verticalLayout.addWidget(self.radio3)
-
+        self.horizontalLayout_2.addWidget(self.radio3)
         self.radio2 = QtWidgets.QRadioButton(self.gridLayoutWidget)
         self.radio2.setObjectName("radio2")
-        self.verticalLayout.addWidget(self.radio2)
-
+        self.horizontalLayout_2.addWidget(self.radio2)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.progressBar = QtWidgets.QProgressBar(self.gridLayoutWidget)
         self.progressBar.setEnabled(False)
         self.progressBar.setAutoFillBackground(False)
@@ -92,41 +111,25 @@ class Ui_MainWindow(QMainWindow):
         self.progressBar.setTextDirection(QtWidgets.QProgressBar.TopToBottom)
         self.progressBar.setObjectName("progressBar")
         self.verticalLayout.addWidget(self.progressBar)
-
-        self.gridLayout.addLayout(self.verticalLayout, 1, 1, 1, 1)
-
-        self.analyzeButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.analyzeButton.setEnabled(False)
-        self.analyzeButton.setObjectName("analyzeButton")
-        self.gridLayout.addWidget(self.analyzeButton, 3, 0, 1, 1)
-
-        self.label_4 = QtWidgets.QLabel(self.gridLayoutWidget)
-        self.label_4.setObjectName("label_4")
-        self.gridLayout.addWidget(self.label_4, 4, 1, 1, 1)
-
+        self.gridLayout.addLayout(self.verticalLayout, 1, 2, 1, 1)
+        self.connectLabel = QtWidgets.QLabel(self.gridLayoutWidget)
+        self.connectLabel.setObjectName("connectLabel")
+        self.gridLayout.addWidget(self.connectLabel, 0, 2, 1, 1)
         self.openLabel = QtWidgets.QLabel(self.gridLayoutWidget)
+        self.openLabel.setText("")
         self.openLabel.setObjectName("openLabel")
-        self.gridLayout.addWidget(self.openLabel, 2, 1, 1, 1)
-
+        self.gridLayout.addWidget(self.openLabel, 2, 2, 1, 1)
         self.connectButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.connectButton.setObjectName("connectButton")
         self.gridLayout.addWidget(self.connectButton, 0, 0, 1, 1)
-
-        self.connectLabel = QtWidgets.QLabel(self.gridLayoutWidget)
-        self.connectLabel.setObjectName("connectLabel")
-        self.gridLayout.addWidget(self.connectLabel, 0, 1, 1, 1)
-
         MainWindow.setCentralWidget(self.centralwidget)
-
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 450, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 480, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
-
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.setupLater()
@@ -139,39 +142,61 @@ class Ui_MainWindow(QMainWindow):
         self.openButton.clicked.connect(lambda: self.openFile())
         self.saveButton.clicked.connect(lambda: self.saveFile())
         self.exitButton.clicked.connect(lambda: self.exit())
-        self.analyzeButton.clicked.connect(lambda: self.analyze())
+
+        self.displayGraphButton.clicked.connect(lambda: self.displayGraph())
+        self.saveGraphButton.clicked.connect(lambda: self.saveGraph())
+        self.displayImageButton.clicked.connect(lambda: self.displayImage())
+        self.saveImageButton.clicked.connect(lambda: self.saveImage())
+
         self.connectButton.clicked.connect(lambda: self.connect())
         self.startButton.clicked.connect(lambda: self.start())
-        
-        
 
+        self.setAnalyzeButtons(False)
         
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.openButton.setText(_translate("MainWindow", "Open file"))
-        self.saveButton.setText(_translate("MainWindow", "Save file"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Sonar"))
+        self.displayGraphButton.setText(_translate("MainWindow", "Display graph"))
+        self.saveGraphButton.setText(_translate("MainWindow", "Save graph"))
+        self.displayImageButton.setText(_translate("MainWindow", "Display img"))
+        self.saveImageButton.setText(_translate("MainWindow", "Save image"))
+        self.saveButton.setText(_translate("MainWindow", "Save as csv file"))
+        self.openButton.setText(_translate("MainWindow", "Open csv file"))
         self.exitButton.setText(_translate("MainWindow", "Exit"))
         self.startButton.setText(_translate("MainWindow", "Start meauserement"))
-        self.label.setText(_translate("MainWindow", "Number of measurements at every position"))
+        self.label.setText(_translate("MainWindow", "Number of measurements at every position:"))
         self.radio1.setText(_translate("MainWindow", "1"))
         self.radio3.setText(_translate("MainWindow", "2"))
         self.radio2.setText(_translate("MainWindow", "3"))
-        self.analyzeButton.setText(_translate("MainWindow", "Analyze"))
-        self.label_4.setText(_translate("MainWindow", "[placeholder]"))
-        self.openLabel.setText(_translate("MainWindow", "[filename of opened file]"))
-        self.connectButton.setText(_translate("MainWindow", "Connect to Arduino"))
         self.connectLabel.setText(_translate("MainWindow", "Ready..."))
+        self.connectButton.setText(_translate("MainWindow", "Connect to Arduino"))
 
+    def setAnalyzeButtons(self, state):
+        self.displayGraphButton.setEnabled(state)
+        self.saveGraphButton.setEnabled(state)
+        self.displayImageButton.setEnabled(state)
+        self.saveImageButton.setEnabled(state)
 
     def exit(self):
         print("exiting...")
-
-    def analyze(self):
-        print("analyze...")
-        self.old_create_graph(self.data)
-
+        self.MainWindow.close()
+        
+    def displayGraph(self):
+        print("displayGraph")
+        self.old_create_graph(self.data, True)
+        
+    def saveGraph(self):
+        print("saveGraph")
+        self.old_create_graph(self.data, False)
+        
+    def displayImage(self):
+        print("displayImage")
+        self.create_image(self.data, True)
+        
+    def saveImage(self):
+        print("saveImage")
+        self.create_image(self.data, False)
+    
     def start(self):
         print("starting...")
         self.startButton.setEnabled(False)
@@ -231,8 +256,6 @@ class Ui_MainWindow(QMainWindow):
 
         ser.close()
 
-
-
     def connect(self):
         print("connect...")
         self.connectButton.setEnabled(False)
@@ -240,13 +263,13 @@ class Ui_MainWindow(QMainWindow):
 
         try:
             self.ser = serial.Serial(
-            port='COM4',\
+            port='COM3',\
             baudrate=9600,\
             parity=serial.PARITY_NONE,\
             stopbits=serial.STOPBITS_ONE,\
             bytesize=serial.EIGHTBITS,\
                 timeout=0)
-
+            print("111")
             time.sleep(3)
             self.connectLabel.setText("connected to : " + self.ser.portstr)
             self.connectButton.setText("Reconnect")
@@ -258,7 +281,6 @@ class Ui_MainWindow(QMainWindow):
 
         self.connectButton.setEnabled(True)
 
-        
     def showdialog(self, title, message):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
@@ -271,24 +293,20 @@ class Ui_MainWindow(QMainWindow):
         return retval
     
     def saveFile(self):
-        print("saving file ...")
-        # bedzie zapisywal pomiary do pliku csv
+        print("(NOT DONE)saving file ...")
+        
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
+        with open(filename, 'w', newline='') as file:
+            angle = 0
+            file = csv.writer(file, delimiter=',')
+            i = 0
+            while i < len(self.data):
+                file.writerow([str(i), str(self.data.get(i))])
+                i += 1
 
-
-        #  # Only open dialog if there is no filename yet
-        # # PYQT5 Returns a tuple in PyQt5, we only need the filename
-        # if not self.filename:
-        #     self.filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
-
-        # if self.filename:
-        #     # We just store the contents of the text file along with the
-        #     # format in html, which Qt does in a very nice way for us
-        #     with open(self.filename, "wt") as file:
-        #         file.write(self.text.toPlainText())
-
-        #     self.changesSaved = True
-
-
+            # for element in self.data:
+            #     file.writerow([str(angle), str(element)])
+            #     angle += 1
 
     def openFile(self):
         print("opening file...")
@@ -301,13 +319,12 @@ class Ui_MainWindow(QMainWindow):
                 for row in file_reader:
                     #self.data.append(float(row[1]))
                     self.data[int(row[0])]=float(row[1])
-                    print("reading: " + str(row[0]) + " > " + str(row[1]))
-        self.analyzeButton.setEnabled(True)
-        print(self.data)
+                    #print("reading: " + str(row[0]) + " > " + str(row[1]))
+        
+        #print(self.data)
+        self.saveButton.setEnabled(True)
+        self.setAnalyzeButtons(True)
                 
-
-
-    
     def old_save(data):
         DIR = os.getcwd() + "\\data"
         names = os.listdir(DIR)
@@ -322,7 +339,6 @@ class Ui_MainWindow(QMainWindow):
                 file.writerow([str(angle), str(element)])
                 angle += 1
 
-
     def old_read(filename):
         DIR = os.getcwd() + os.path.sep
         with open(DIR + filename) as file:
@@ -333,7 +349,7 @@ class Ui_MainWindow(QMainWindow):
                 
         return data
     
-    def old_create_graph(self, data):
+    def old_create_graph(self, data, display):
         fig = plt.figure(figsize=(10, 5))
         ax = fig.add_subplot()
         # Move left y-axis and bottom x-axis to centre, passing through (0,0)
@@ -357,40 +373,56 @@ class Ui_MainWindow(QMainWindow):
 
         ax.spines['left'].set_position(('data', 0))
         ax.spines['bottom'].set_position(('data', 0))
-        # Interactive plot ON
-        # plt.ion()
-
-        # for key, value in self.data_dict.items():
-        # print(data)
-        # i = 0
-        # while i < 180:
-        #     print(str(i) + " > " + str(data.get(i)))
-
-        #     #x.append()
-        #     i += 1
-
-        
+       
         i = 0
         while i <= 180 :
-            print("i = " + str(i) + "value = " + str(data.get(i)))
+            #print("i = " + str(i) + " value = " + str(data.get(i)))
             y.append(math.sin(math.radians(i)) * (data.get(i)))
             x.append(math.cos(math.radians(i)) * (data.get(i)))
             i += 1
-
-        
-
-        # i = 0
-        # while i < 180:
-        #     y.append(math.sin(math.radians(i)) * data.get(i))
-        #     x.append(math.cos(math.radians(i)) * data.get(i))
-        #     # print(y)
-        #     # print(x)
-        #     # plt.pause(0.1)
-        #     i += 1
-
         li.set_ydata(y)
         li.set_xdata(x)
-        plt.show()
+        if display:
+            plt.show()
+        else:
+            filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
+            plt.savefig(filename)
+
+    def create_image(self, data, display):
+        w, h = 180, 400
+        img = [[0 for x in range(w)] for y in range(h)] 
+        img = np.zeros((h, w))
+
+        i = 0
+        while i < w :
+            value = int(data.get(i))
+            if value >= h : value = h-1
+            #print("set: " +str(i) + ", " + str(value) + " to 1" )
+            img[:value, i] = 1
+            i = i+1
+        
+        if display : 
+
+            fig, ax = plt.subplots()
+            ax.set_xlabel("angle [°]")
+            ax.set_ylabel("distance [cm]")
+            ax.set_ylim([0, 400])
+            plt.imshow(img, cmap='gray', vmin=0, vmax=1)
+            plt.show()
+        else:
+            #flip vertically before saving 
+            img = np.flip(img, 0)
+
+            #Rescale to 0-255 and convert to uint8
+            rescaled = (255.0 / img.max() * (img - img.min())).astype(np.uint8)
+
+            im = Image.fromarray(rescaled)
+             # Only open dialog if there is no filename yet
+            # PYQT5 Returns a tuple in PyQt5, we only need the filename
+            filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
+
+            im.save(filename)
+
 
 if __name__ == "__main__":
     import sys
