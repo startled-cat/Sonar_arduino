@@ -19,6 +19,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import QtGui, QtCore, QtWidgets
 
+import cv2 as cv
+
 
 
 class Ui_MainWindow(QMainWindow):
@@ -183,7 +185,8 @@ class Ui_MainWindow(QMainWindow):
         
     def displayGraph(self):
         print("displayGraph")
-        self.old_create_graph(self.data, True)
+        #self.old_create_graph(self.data, True)
+        self.morph()
         
     def saveGraph(self):
         print("saveGraph")
@@ -245,7 +248,7 @@ class Ui_MainWindow(QMainWindow):
                             self.saveButton.setEnabled(True)
                             self.setAnalyzeButtons(True)
                             print("measurement done!")
-                            self.statusbar.setText("measurements collected!")
+                            #self.statusbar.setText("measurements collected!")
                             self.startButton.setEnabled(True)
                             self.ser.close()
                             print("connection closed")
@@ -263,6 +266,47 @@ class Ui_MainWindow(QMainWindow):
 
 
         self.ser.close()
+
+
+
+    def morph(self):
+        w, h = 180, 400
+        img = [[0 for x in range(w)] for y in range(h)] 
+        img = np.zeros((h, w))
+
+        i = 0
+        while i < w :
+            value = int(self.data.get(i))
+            if value >= h : value = h-1
+            #print("set: " +str(i) + ", " + str(value) + " to 1" )
+            img[:value, i] = 1
+            i = i+1
+
+        img = np.flip(img, 0)
+        
+        #img = cv.imread('image.bmp', 0)
+        #img = img/255
+        kernel = np.ones((10,10),np.uint8)
+        opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)
+        closing = cv.morphologyEx(opening, cv.MORPH_CLOSE, kernel)
+
+        y, x = closing.shape
+        
+        #print(y,x, img[0,1])
+        
+        j=0
+        data={}
+        while j<x:
+            i=0
+            while closing[i,j]==0 :
+                i+=1
+            print(y-i)
+            data[j]=float(y-i)
+            j+=1
+
+        self.data = data
+        self.old_create_graph(self.data,True)
+
 
     def connect(self):
         print("connect...")
@@ -357,6 +401,7 @@ class Ui_MainWindow(QMainWindow):
         return data
     
     def old_create_graph(self, data, display):
+        #print(data)
         fig = plt.figure(figsize=(10, 5))
         ax = fig.add_subplot()
         # Move left y-axis and bottom x-axis to centre, passing through (0,0)
@@ -382,10 +427,11 @@ class Ui_MainWindow(QMainWindow):
         ax.spines['bottom'].set_position(('data', 0))
        
         i = 0
-        while i <= 180 :
+        print(self.data)
+        while i < len(self.data) :
             #print("i = " + str(i) + " value = " + str(data.get(i)))
-            y.append(math.sin(math.radians(i)) * (data.get(i)))
-            x.append(math.cos(math.radians(i)) * (data.get(i)))
+            y.append(math.sin(math.radians(i)) * (self.data.get(i)))
+            x.append(math.cos(math.radians(i)) * (self.data.get(i)))
             i += 1
         li.set_ydata(y)
         li.set_xdata(x)

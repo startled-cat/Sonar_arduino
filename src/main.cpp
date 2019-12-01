@@ -1,8 +1,8 @@
 #include <Servo.h>
 #include "Arduino.h"
 
-#define SERVO_STOPTIME 50
-#define SONAR_STOPTIME 100
+#define SERVO_STOPTIME 150
+#define SONAR_STOPTIME 150
 
 #define RED_LED 2
 #define RED_LED2 8
@@ -62,7 +62,7 @@ void loop() {
 			m[i] = temp;
 			digitalWrite(RED_LED2, LOW);
 		}
-		delay(50);
+		delay(SONAR_STOPTIME);
 	}
 	
 	print(Measurements, m);
