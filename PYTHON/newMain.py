@@ -208,25 +208,22 @@ class Ui_MainWindow(QMainWindow):
         elif self.radio3.isChecked : measurements = 3
 
         if measurements == '2':
-            ser.write(bytes(measurements, 'utf-8'))
+            self.ser.write(bytes(measurements, 'utf-8'))
         elif measurements == '3':
-            ser.write(bytes(measurements, 'utf-8'))
+            self.ser.write(bytes(measurements, 'utf-8'))
         else:
             measurements = '1'
-            ser.write(bytes(measurements, 'utf-8'))
+            self.ser.write(bytes(measurements, 'utf-8'))
 
         measurements = int(measurements)
 
-        m = [180]
-
-        time.sleep(3)
+        time.sleep(1)
         while True:
-            for c in ser.read():
+            for c in self.ser.read():
                 if chr(c) == '\n':
                     data = joined_seq.split(",")
                     try:
-                        # print(str(data))
-                        # print(str(data.__len__()))
+
                         if data.__len__() < 2 :
                             break
                         angle = int(data[0])
@@ -236,12 +233,23 @@ class Ui_MainWindow(QMainWindow):
                             distance.append(int(data[i+1]) / 58.2)
                             i += 1
                         print("angle: " + str(angle) + "; " + str(distance))
-                        m.insert(angle, statistics.median(distance))
+                        
+                        self.data[int(angle)] = float(statistics.median(distance))
+
                         if angle == 180:
-                            print("creating graph ... ")
-                            create_graph(m)
-                            save(m)
-                            print("done!")
+                            #print("creating graph ... ")
+                            #self.data = m
+
+                            #self.saveFile()
+
+                            self.saveButton.setEnabled(True)
+                            self.setAnalyzeButtons(True)
+                            print("measurement done!")
+                            self.statusbar.setText("measurements collected!")
+                            self.startButton.setEnabled(True)
+                            self.ser.close()
+                            print("connection closed")
+                            return
                     except ValueError:
                         print(joined_seq)
                     except IndexError:
@@ -254,7 +262,7 @@ class Ui_MainWindow(QMainWindow):
                 joined_seq = ''.join(str(v) for v in seq)  # Make a string from arrays
 
 
-        ser.close()
+        self.ser.close()
 
     def connect(self):
         print("connect...")
@@ -262,6 +270,7 @@ class Ui_MainWindow(QMainWindow):
         self.connectButton.setText("Connecting...")
 
         try:
+            print("100")
             self.ser = serial.Serial(
             port='COM3',\
             baudrate=9600,\
@@ -273,13 +282,11 @@ class Ui_MainWindow(QMainWindow):
             time.sleep(3)
             self.connectLabel.setText("connected to : " + self.ser.portstr)
             self.connectButton.setText("Reconnect")
-        except:
-            self.showdialog("error", "couldnt connect")
-
-
-        
-
+        except Exception as e: 
+            print(e)
+        print("connected")
         self.connectButton.setEnabled(True)
+        self.startButton.setEnabled(True)
 
     def showdialog(self, title, message):
         msg = QMessageBox()

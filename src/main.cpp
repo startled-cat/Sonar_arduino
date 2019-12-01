@@ -1,10 +1,11 @@
 #include <Servo.h>
 #include "Arduino.h"
 
-#define SERVO_STOPTIME 200
+#define SERVO_STOPTIME 50
 #define SONAR_STOPTIME 100
 
 #define RED_LED 2
+#define RED_LED2 8
 #define SERVO 3
 #define MOSFET 4
 #define TRIGGRER 7
@@ -29,6 +30,7 @@ void setup() {
 	
 	//pinMode(MOSFET, OUTPUT);
 	pinMode(RED_LED, OUTPUT);
+	pinMode(RED_LED2, OUTPUT);
 	pos = 0;//190;//myservo.read();
 }
 
@@ -48,17 +50,19 @@ void loop() {
 
 	myservo.write(pos);  
 	delay(SERVO_STOPTIME); 	
-	delay(700);  
+	//delay(700);  
 	for (int i = 0; i < Measurements; i++) {
 		
 		unsigned long temp = measure();
 		if (temp < 15*58) {
 			i--;
+			digitalWrite(RED_LED2, HIGH);
 			continue;
-		} else {
+		}else {
 			m[i] = temp;
+			digitalWrite(RED_LED2, LOW);
 		}
-		delay(200);
+		delay(50);
 	}
 	
 	print(Measurements, m);
