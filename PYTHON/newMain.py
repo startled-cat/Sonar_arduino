@@ -21,7 +21,6 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 
 
-
 class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("Sonar")
@@ -264,13 +263,13 @@ class Ui_MainWindow(QMainWindow):
 
         try:
             self.ser = serial.Serial(
-            port='COM4',\
+            port='COM3',\
             baudrate=9600,\
             parity=serial.PARITY_NONE,\
             stopbits=serial.STOPBITS_ONE,\
             bytesize=serial.EIGHTBITS,\
                 timeout=0)
-
+            print("111")
             time.sleep(3)
             self.connectLabel.setText("connected to : " + self.ser.portstr)
             self.connectButton.setText("Reconnect")
