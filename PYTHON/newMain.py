@@ -208,20 +208,20 @@ class Ui_MainWindow(QMainWindow):
         elif self.radio3.isChecked : measurements = 3
 
         if measurements == '2':
-            ser.write(bytes(measurements, 'utf-8'))
+            self.ser.write(bytes(measurements, 'utf-8'))
         elif measurements == '3':
-            ser.write(bytes(measurements, 'utf-8'))
+            self.ser.write(bytes(measurements, 'utf-8'))
         else:
             measurements = '1'
-            ser.write(bytes(measurements, 'utf-8'))
+            self.ser.write(bytes(measurements, 'utf-8'))
 
         measurements = int(measurements)
 
         m = [180]
-
+        progres = 0
         time.sleep(3)
         while True:
-            for c in ser.read():
+            for c in self.ser.read():
                 if chr(c) == '\n':
                     data = joined_seq.split(",")
                     try:
@@ -237,11 +237,15 @@ class Ui_MainWindow(QMainWindow):
                             i += 1
                         print("angle: " + str(angle) + "; " + str(distance))
                         m.insert(angle, statistics.median(distance))
+                        progres += 1
+                        self.progressBar.setValue = progres
                         if angle == 180:
-                            print("creating graph ... ")
-                            create_graph(m)
-                            save(m)
+                            #print("creating graph ... ")
+                            #create_graph(m)
+                            #save(m)
                             print("done!")
+                            self.data = m
+                            return m
                     except ValueError:
                         print(joined_seq)
                     except IndexError:
@@ -254,7 +258,7 @@ class Ui_MainWindow(QMainWindow):
                 joined_seq = ''.join(str(v) for v in seq)  # Make a string from arrays
 
 
-        ser.close()
+        self.ser.close()
 
     def connect(self):
         print("connect...")
