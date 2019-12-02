@@ -28,6 +28,7 @@ class Ui_MainWindow(QMainWindow):
     plot_title_morph = "After morphology "
     
     def setupUi(self, MainWindow):
+        self.MainWindow = MainWindow
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(688, 431)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -506,8 +507,9 @@ class Ui_MainWindow(QMainWindow):
             self.connectLabel.setText("connected to : " + self.ser.portstr)
             self.connectButton.setText("Reconnect")
         except Exception as e: 
-            print("error while establishing serial connection : " + e)
+            print("error while establishing serial connection : " + str(e))
             self.connectButton.setEnabled(True)
+            self.showdialog("Error", "error while establishing serial connection : " + str(e))
 
 
         print("connection established!")
@@ -530,6 +532,7 @@ class Ui_MainWindow(QMainWindow):
         print("(NOT DONE)saving file ...")
         try:
             filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
+            if filename == "" : return
             with open(filename, 'w', newline='') as file:
                 angle = 0
                 file = csv.writer(file, delimiter=',')
@@ -541,8 +544,8 @@ class Ui_MainWindow(QMainWindow):
                 # for element in self.data:
                 #     file.writerow([str(angle), str(element)])
                 #     angle += 1
-        except:
-            print("failed to save file :(")
+        except Exception as e:
+            self.showdialog("Error", "failed to save file :(\n" + str(e))
 
 
     def openFile(self):
