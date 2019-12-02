@@ -24,56 +24,37 @@ import cv2 as cv
 
 
 class Ui_MainWindow(QMainWindow):
+    plot_title_raw = "Raw data "
+    plot_title_morph = "After morphology "
+    
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("Sonar")
-        MainWindow.resize(480, 342)
-
-        self.MainWindow = MainWindow
-
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(688, 431)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
+        self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 460, 284))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(20, 10, 651, 371))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
+        self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.displayGraphButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        
-
-        self.displayGraphButton.setObjectName("displayGraphButton")
-        self.horizontalLayout.addWidget(self.displayGraphButton)
-        self.saveGraphButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        
-
-        self.saveGraphButton.setObjectName("saveGraphButton")
-        self.horizontalLayout.addWidget(self.saveGraphButton)
-        self.displayImageButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.displayImageButton.setObjectName("displayImageButton")
-        
-        
-        self.horizontalLayout.addWidget(self.displayImageButton)
-        self.saveImageButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.saveImageButton.setObjectName("saveImageButton")
-        
-
-        self.horizontalLayout.addWidget(self.saveImageButton)
-        self.gridLayout.addLayout(self.horizontalLayout, 4, 2, 1, 1)
-        self.saveButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.saveButton.setEnabled(False)
-        self.saveButton.setObjectName("saveButton")
-        self.gridLayout.addWidget(self.saveButton, 4, 0, 1, 1)
         self.openButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.openButton.sizePolicy().hasHeightForWidth())
+        self.openButton.setSizePolicy(sizePolicy)
         self.openButton.setObjectName("openButton")
         self.gridLayout.addWidget(self.openButton, 2, 0, 1, 1)
-        self.exitButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.exitButton.setObjectName("exitButton")
-        self.gridLayout.addWidget(self.exitButton, 7, 0, 1, 1)
         self.startButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.startButton.setEnabled(False)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.startButton.sizePolicy().hasHeightForWidth())
@@ -93,45 +74,192 @@ class Ui_MainWindow(QMainWindow):
         self.horizontalLayout_2.setContentsMargins(-1, 0, -1, -1)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.radio1 = QtWidgets.QRadioButton(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.radio1.sizePolicy().hasHeightForWidth())
+        self.radio1.setSizePolicy(sizePolicy)
         self.radio1.setObjectName("radio1")
         self.horizontalLayout_2.addWidget(self.radio1)
         self.radio3 = QtWidgets.QRadioButton(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.radio3.sizePolicy().hasHeightForWidth())
+        self.radio3.setSizePolicy(sizePolicy)
         self.radio3.setChecked(True)
         self.radio3.setObjectName("radio3")
         self.horizontalLayout_2.addWidget(self.radio3)
         self.radio2 = QtWidgets.QRadioButton(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.radio2.sizePolicy().hasHeightForWidth())
+        self.radio2.setSizePolicy(sizePolicy)
         self.radio2.setObjectName("radio2")
         self.horizontalLayout_2.addWidget(self.radio2)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
-        self.progressBar = QtWidgets.QProgressBar(self.gridLayoutWidget)
-        self.progressBar.setEnabled(False)
-        self.progressBar.setAutoFillBackground(False)
-        self.progressBar.setMaximum(180)
-        self.progressBar.setProperty("value", 0)
-        self.progressBar.setTextVisible(False)
-        self.progressBar.setInvertedAppearance(False)
-        self.progressBar.setTextDirection(QtWidgets.QProgressBar.TopToBottom)
-        self.progressBar.setObjectName("progressBar")
-        self.verticalLayout.addWidget(self.progressBar)
-        self.gridLayout.addLayout(self.verticalLayout, 1, 2, 1, 1)
+        self.gridLayout.addLayout(self.verticalLayout, 1, 1, 1, 1)
         self.connectLabel = QtWidgets.QLabel(self.gridLayoutWidget)
         self.connectLabel.setObjectName("connectLabel")
-        self.gridLayout.addWidget(self.connectLabel, 0, 2, 1, 1)
+        self.gridLayout.addWidget(self.connectLabel, 0, 1, 1, 1)
+        self.connectButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.connectButton.sizePolicy().hasHeightForWidth())
+        self.connectButton.setSizePolicy(sizePolicy)
+        self.connectButton.setBaseSize(QtCore.QSize(0, 0))
+        self.connectButton.setObjectName("connectButton")
+        self.gridLayout.addWidget(self.connectButton, 0, 0, 1, 1)
         self.openLabel = QtWidgets.QLabel(self.gridLayoutWidget)
         self.openLabel.setText("")
         self.openLabel.setObjectName("openLabel")
-        self.gridLayout.addWidget(self.openLabel, 2, 2, 1, 1)
-        self.connectButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.connectButton.setObjectName("connectButton")
-        self.gridLayout.addWidget(self.connectButton, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.openLabel, 2, 1, 1, 1)
+        self.groupBox_2 = QtWidgets.QGroupBox(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
+        self.groupBox_2.setSizePolicy(sizePolicy)
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.horizontalLayoutWidget_3 = QtWidgets.QWidget(self.groupBox_2)
+        self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(40, 20, 421, 81))
+        self.horizontalLayoutWidget_3.setObjectName("horizontalLayoutWidget_3")
+        self.horizontalLayout_6 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_3)
+        self.horizontalLayout_6.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_6.setObjectName("horizontalLayout_6")
+        self.saveButtonM = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.saveButtonM.sizePolicy().hasHeightForWidth())
+        self.saveButtonM.setSizePolicy(sizePolicy)
+        self.saveButtonM.setObjectName("saveButtonM")
+        self.horizontalLayout_6.addWidget(self.saveButtonM)
+        self.displayGraphButtonM = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.displayGraphButtonM.sizePolicy().hasHeightForWidth())
+        self.displayGraphButtonM.setSizePolicy(sizePolicy)
+        self.displayGraphButtonM.setObjectName("displayGraphButtonM")
+        self.horizontalLayout_6.addWidget(self.displayGraphButtonM)
+        self.saveGraphButtonM = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.saveGraphButtonM.sizePolicy().hasHeightForWidth())
+        self.saveGraphButtonM.setSizePolicy(sizePolicy)
+        self.saveGraphButtonM.setObjectName("saveGraphButtonM")
+        self.horizontalLayout_6.addWidget(self.saveGraphButtonM)
+        self.displayImageButtonM = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.displayImageButtonM.sizePolicy().hasHeightForWidth())
+        self.displayImageButtonM.setSizePolicy(sizePolicy)
+        self.displayImageButtonM.setObjectName("displayImageButtonM")
+        self.horizontalLayout_6.addWidget(self.displayImageButtonM)
+        self.saveImageButtonM = QtWidgets.QPushButton(self.horizontalLayoutWidget_3)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.saveImageButtonM.sizePolicy().hasHeightForWidth())
+        self.saveImageButtonM.setSizePolicy(sizePolicy)
+        self.saveImageButtonM.setObjectName("saveImageButtonM")
+        self.horizontalLayout_6.addWidget(self.saveImageButtonM)
+        self.gridLayout.addWidget(self.groupBox_2, 4, 1, 1, 1)
+        self.groupBox = QtWidgets.QGroupBox(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
+        self.groupBox.setSizePolicy(sizePolicy)
+        self.groupBox.setObjectName("groupBox")
+        self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self.groupBox)
+        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(40, 20, 421, 81))
+        self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
+        self.horizontalLayout_4.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
+        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.saveButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        self.saveButton.setEnabled(False)
+        self.saveButtonM.setEnabled(False)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.saveButton.sizePolicy().hasHeightForWidth())
+        self.saveButton.setSizePolicy(sizePolicy)
+        self.saveButton.setObjectName("saveButton")
+        self.horizontalLayout_4.addWidget(self.saveButton)
+        self.displayGraphButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.displayGraphButton.sizePolicy().hasHeightForWidth())
+        self.displayGraphButton.setSizePolicy(sizePolicy)
+        self.displayGraphButton.setObjectName("displayGraphButton")
+        self.horizontalLayout_4.addWidget(self.displayGraphButton)
+        self.saveGraphButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.saveGraphButton.sizePolicy().hasHeightForWidth())
+        self.saveGraphButton.setSizePolicy(sizePolicy)
+        self.saveGraphButton.setObjectName("saveGraphButton")
+        self.horizontalLayout_4.addWidget(self.saveGraphButton)
+        self.displayImageButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.displayImageButton.sizePolicy().hasHeightForWidth())
+        self.displayImageButton.setSizePolicy(sizePolicy)
+        self.displayImageButton.setObjectName("displayImageButton")
+        self.horizontalLayout_4.addWidget(self.displayImageButton)
+        self.saveImageButton = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.saveImageButton.sizePolicy().hasHeightForWidth())
+        self.saveImageButton.setSizePolicy(sizePolicy)
+        self.saveImageButton.setObjectName("saveImageButton")
+        self.horizontalLayout_4.addWidget(self.saveImageButton)
+        self.gridLayout.addWidget(self.groupBox, 3, 1, 1, 1)
+        self.exitButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.exitButton.sizePolicy().hasHeightForWidth())
+        self.exitButton.setSizePolicy(sizePolicy)
+        self.exitButton.setObjectName("exitButton")
+        self.gridLayout.addWidget(self.exitButton, 5, 0, 1, 1)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.formLayout = QtWidgets.QFormLayout()
+        self.formLayout.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
+        self.formLayout.setObjectName("formLayout")
+        self.spinBox = QtWidgets.QSpinBox(self.gridLayoutWidget)
+        self.spinBox.setMinimum(1)
+        self.spinBox.setMaximum(150)
+        self.spinBox.setProperty("value", 10)
+        self.spinBox.setObjectName("spinBox")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.spinBox)
+        self.label_2 = QtWidgets.QLabel(self.gridLayoutWidget)
+        self.label_2.setObjectName("label_2")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.label_2)
+        self.verticalLayout_2.addLayout(self.formLayout)
+        self.gridLayout.addLayout(self.verticalLayout_2, 4, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 480, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 688, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.setupLater()
@@ -140,15 +268,24 @@ class Ui_MainWindow(QMainWindow):
         print("setupLater ... ")
         self.filename = ''
         self.data = {}
+        self.dataM = {}
         
         self.openButton.clicked.connect(lambda: self.openFile())
-        self.saveButton.clicked.connect(lambda: self.saveFile())
+
+        self.saveButton.clicked.connect(lambda: self.saveFile(self.data))
+        self.saveButtonM.clicked.connect(lambda: self.saveFileM())
+
         self.exitButton.clicked.connect(lambda: self.exit())
 
-        self.displayGraphButton.clicked.connect(lambda: self.displayGraph())
-        self.saveGraphButton.clicked.connect(lambda: self.saveGraph())
-        self.displayImageButton.clicked.connect(lambda: self.displayImage())
-        self.saveImageButton.clicked.connect(lambda: self.saveImage())
+        self.displayGraphButton.clicked.connect(lambda: self.displayGraph(self.data))
+        self.saveGraphButton.clicked.connect(lambda: self.saveGraph(self.data))
+        self.displayImageButton.clicked.connect(lambda: self.displayImage(self.data))
+        self.saveImageButton.clicked.connect(lambda: self.saveImage(self.data))
+
+        self.displayGraphButtonM.clicked.connect(lambda: self.displayGraphM())
+        self.saveGraphButtonM.clicked.connect(lambda: self.saveGraphM())
+        self.displayImageButtonM.clicked.connect(lambda: self.displayImageM())
+        self.saveImageButtonM.clicked.connect(lambda: self.saveImageM())
 
         self.connectButton.clicked.connect(lambda: self.connect())
         self.startButton.clicked.connect(lambda: self.start())
@@ -158,13 +295,7 @@ class Ui_MainWindow(QMainWindow):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Sonar"))
-        self.displayGraphButton.setText(_translate("MainWindow", "Display graph"))
-        self.saveGraphButton.setText(_translate("MainWindow", "Save graph"))
-        self.displayImageButton.setText(_translate("MainWindow", "Display img"))
-        self.saveImageButton.setText(_translate("MainWindow", "Save image"))
-        self.saveButton.setText(_translate("MainWindow", "Save as csv file"))
         self.openButton.setText(_translate("MainWindow", "Open csv file"))
-        self.exitButton.setText(_translate("MainWindow", "Exit"))
         self.startButton.setText(_translate("MainWindow", "Start meauserement"))
         self.label.setText(_translate("MainWindow", "Number of measurements at every position:"))
         self.radio1.setText(_translate("MainWindow", "1"))
@@ -172,34 +303,77 @@ class Ui_MainWindow(QMainWindow):
         self.radio2.setText(_translate("MainWindow", "3"))
         self.connectLabel.setText(_translate("MainWindow", "Ready..."))
         self.connectButton.setText(_translate("MainWindow", "Connect to Arduino"))
+        self.groupBox_2.setTitle(_translate("MainWindow", "After morphology"))
+
+        self.saveButtonM.setText(_translate("MainWindow", "Save as csv file"))
+
+        self.displayGraphButtonM.setText(_translate("MainWindow", "Display graph"))
+        self.saveGraphButtonM.setText(_translate("MainWindow", "Save graph"))
+        self.displayImageButtonM.setText(_translate("MainWindow", "Display img"))
+        self.saveImageButtonM.setText(_translate("MainWindow", "Save image"))
+        self.groupBox.setTitle(_translate("MainWindow", "Raw data"))
+        self.saveButton.setText(_translate("MainWindow", "Save as csv file"))
+        self.displayGraphButton.setText(_translate("MainWindow", "Display graph"))
+        self.saveGraphButton.setText(_translate("MainWindow", "Save graph"))
+        self.displayImageButton.setText(_translate("MainWindow", "Display img"))
+        self.saveImageButton.setText(_translate("MainWindow", "Save image"))
+        self.exitButton.setText(_translate("MainWindow", "Exit"))
+        self.label_2.setText(_translate("MainWindow", "Size of structuring element"))
 
     def setAnalyzeButtons(self, state):
+        
+        self.saveButton.setEnabled(state)
         self.displayGraphButton.setEnabled(state)
         self.saveGraphButton.setEnabled(state)
         self.displayImageButton.setEnabled(state)
         self.saveImageButton.setEnabled(state)
 
+        self.saveButtonM.setEnabled(state)
+        self.displayGraphButtonM.setEnabled(state)
+        self.saveGraphButtonM.setEnabled(state)
+        self.displayImageButtonM.setEnabled(state)
+        self.saveImageButtonM.setEnabled(state)
+
     def exit(self):
         print("exiting...")
         self.MainWindow.close()
         
-    def displayGraph(self):
+    def displayGraph(self, data):
         print("displayGraph")
-        #self.old_create_graph(self.data, True)
-        self.morph()
+        self.old_create_graph(data, True, self.plot_title_raw)
         
-    def saveGraph(self):
+    def saveGraph(self, data):
         print("saveGraph")
-        self.old_create_graph(self.data, False)
+        self.old_create_graph(data, False, self.plot_title_raw)
         
-    def displayImage(self):
+    def displayImage(self, data):
         print("displayImage")
-        self.create_image(self.data, True)
+        self.create_image(data, True, self.plot_title_raw)
         
-    def saveImage(self):
+    def saveImage(self, data):
         print("saveImage")
-        self.create_image(self.data, False)
+        self.create_image(data, False, self.plot_title_raw)
     
+    def displayGraphM(self):
+        self.updateMorph()
+        self.old_create_graph(self.dataM, True, self.plot_title_morph + "[size=" + str(self.spinBox.value()) + "]")
+
+    def saveGraphM(self):
+        self.updateMorph()
+        self.old_create_graph(self.dataM, False, self.plot_title_morph + "[size=" + str(self.spinBox.value()) + "]")
+
+    def displayImageM(self):
+        self.updateMorph()
+        self.create_image(self.dataM, True, self.plot_title_morph + "[size=" + str(self.spinBox.value()) + "]")
+        
+    def saveImageM(self):
+        self.updateMorph()
+        self.create_image(self.dataM, False, self.plot_title_morph + "[size=" + str(self.spinBox.value()) + "]")
+
+    def saveFileM(self):
+        self.updateMorph()
+        self.saveFile(self.dataM)
+
     def start(self):
         print("starting...")
         self.startButton.setEnabled(False)
@@ -245,7 +419,7 @@ class Ui_MainWindow(QMainWindow):
 
                             #self.saveFile()
 
-                            self.saveButton.setEnabled(True)
+                            
                             self.setAnalyzeButtons(True)
                             print("measurement done!")
                             #self.statusbar.setText("measurements collected!")
@@ -269,7 +443,7 @@ class Ui_MainWindow(QMainWindow):
 
 
 
-    def morph(self):
+    def morph(self, struct_size):
         w, h = 180, 400
         img = [[0 for x in range(w)] for y in range(h)] 
         img = np.zeros((h, w))
@@ -286,7 +460,7 @@ class Ui_MainWindow(QMainWindow):
         
         #img = cv.imread('image.bmp', 0)
         #img = img/255
-        kernel = np.ones((10,10),np.uint8)
+        kernel = np.ones((struct_size, struct_size),np.uint8)
         opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)
         closing = cv.morphologyEx(opening, cv.MORPH_CLOSE, kernel)
 
@@ -300,13 +474,18 @@ class Ui_MainWindow(QMainWindow):
             i=0
             while closing[i,j]==0 :
                 i+=1
-            print(y-i)
+            #print(y-i)
             data[j]=float(y-i)
             j+=1
 
-        self.data = data
-        self.old_create_graph(self.data,True)
+        self.dataM = data
 
+    def updateMorph(self):
+        struct_size = self.spinBox.value()
+        print("Struct_size = " + str(struct_size))
+        #todo: check if update necessary
+        self.morph(struct_size)
+        
 
     def connect(self):
         print("connect...")
@@ -314,7 +493,7 @@ class Ui_MainWindow(QMainWindow):
         self.connectButton.setText("Connecting...")
 
         try:
-            print("100")
+            print("establishing serial connection ... ")
             self.ser = serial.Serial(
             port='COM3',\
             baudrate=9600,\
@@ -322,13 +501,17 @@ class Ui_MainWindow(QMainWindow):
             stopbits=serial.STOPBITS_ONE,\
             bytesize=serial.EIGHTBITS,\
                 timeout=0)
-            print("111")
+            print("serial object created")
             time.sleep(3)
             self.connectLabel.setText("connected to : " + self.ser.portstr)
             self.connectButton.setText("Reconnect")
         except Exception as e: 
-            print(e)
-        print("connected")
+            print("error while establishing serial connection : " + e)
+            self.connectButton.setEnabled(True)
+
+
+        print("connection established!")
+        self.connectButton.setText("Reconnect")
         self.connectButton.setEnabled(True)
         self.startButton.setEnabled(True)
 
@@ -343,21 +526,24 @@ class Ui_MainWindow(QMainWindow):
         print("value of pressed message box button:", retval)
         return retval
     
-    def saveFile(self):
+    def saveFile(self, data):
         print("(NOT DONE)saving file ...")
-        
-        filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
-        with open(filename, 'w', newline='') as file:
-            angle = 0
-            file = csv.writer(file, delimiter=',')
-            i = 0
-            while i < len(self.data):
-                file.writerow([str(i), str(self.data.get(i))])
-                i += 1
+        try:
+            filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
+            with open(filename, 'w', newline='') as file:
+                angle = 0
+                file = csv.writer(file, delimiter=',')
+                i = 0
+                while i < len(data):
+                    file.writerow([str(i), str(data.get(i))])
+                    i += 1
 
-            # for element in self.data:
-            #     file.writerow([str(angle), str(element)])
-            #     angle += 1
+                # for element in self.data:
+                #     file.writerow([str(angle), str(element)])
+                #     angle += 1
+        except:
+            print("failed to save file :(")
+
 
     def openFile(self):
         print("opening file...")
@@ -400,7 +586,7 @@ class Ui_MainWindow(QMainWindow):
                 
         return data
     
-    def old_create_graph(self, data, display):
+    def old_create_graph(self, data, display, title):
         #print(data)
         fig = plt.figure(figsize=(10, 5))
         ax = fig.add_subplot()
@@ -427,21 +613,22 @@ class Ui_MainWindow(QMainWindow):
         ax.spines['bottom'].set_position(('data', 0))
        
         i = 0
-        print(self.data)
-        while i < len(self.data) :
+        #print(self.data)
+        while i < len(data) :
             #print("i = " + str(i) + " value = " + str(data.get(i)))
-            y.append(math.sin(math.radians(i)) * (self.data.get(i)))
-            x.append(math.cos(math.radians(i)) * (self.data.get(i)))
+            y.append(math.sin(math.radians(i)) * (data.get(i)))
+            x.append(math.cos(math.radians(i)) * (data.get(i)))
             i += 1
         li.set_ydata(y)
         li.set_xdata(x)
         if display:
+            plt.title(title)
             plt.show()
         else:
             filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
             plt.savefig(filename)
 
-    def create_image(self, data, display):
+    def create_image(self, data, display, title):
         w, h = 180, 400
         img = [[0 for x in range(w)] for y in range(h)] 
         img = np.zeros((h, w))
@@ -460,6 +647,7 @@ class Ui_MainWindow(QMainWindow):
             ax.set_xlabel("angle [°]")
             ax.set_ylabel("distance [cm]")
             ax.set_ylim([0, 400])
+            plt.title(title)
             plt.imshow(img, cmap='gray', vmin=0, vmax=1)
             plt.show()
         else:
