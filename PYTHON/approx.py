@@ -7,12 +7,29 @@ def approx(data, radius):
 
     z = [] 
 
-    for i in range(0, len(data)-1):                             
+    for i in range(0, len(data)-1, 20):                             
         tupleoflists = approximation(radius, x, y, x[i], y[i])       
         temp = tupleoflists[0]                                  
         z.append(temp[0])                                       
-        trendpoly = np.poly1d(tupleoflists[0])                  
-        plt.plot(tupleoflists[1], trendpoly(tupleoflists[1]))   
+        trendpoly = np.poly1d(tupleoflists[0])
+
+        axes = plt.gca()
+        axes.set_xlim([-100, 100])
+        axes.set_ylim([0, 80])
+
+
+        x_line = range(-400, 400, 1)
+        y_line = trendpoly(x_line)
+
+        plt.plot(x_line, y_line)   
+        #plt.plot(tupleoflists[1], trendpoly(tupleoflists[1]))   
+
+        
+
+    for d in z:
+        print(d)
+
+    plt.show()
 
 def toXY(data):
     y = []
@@ -40,6 +57,6 @@ def approximation(r, x, y, start_x, start_y):
         #print(str(len(new_x)))                                        
                                                                        
     z = np.polyfit(new_x, new_y, 1)                                    
-    print(z[0])                                                        
+    #print(z[0])                                                        
     listoflists = (list(z), list(new_x))                               
     return listoflists                                                 
