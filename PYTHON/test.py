@@ -152,3 +152,23 @@ li3.set_xdata(x3)
 
 plt.title("title")
 plt.show()
+
+
+
+
+import matplotlib.pyplot as plt
+from skimage import draw
+arr = np.zeros((200, 200))
+stroke = 3
+# Create an outer and inner circle. Then subtract the inner from the outer.
+radius = 80
+inner_radius = radius - (stroke // 2) + (stroke % 2) - 1 
+outer_radius = radius + ((stroke + 1) // 2)
+ri, ci = draw.circle(100, 100, radius=inner_radius, shape=arr.shape)
+ro, co = draw.circle(100, 100, radius=outer_radius, shape=arr.shape)
+
+arr[ro, co] = 1
+arr[ri, ci] = 0
+
+plt.imshow(arr)
+plt.show()

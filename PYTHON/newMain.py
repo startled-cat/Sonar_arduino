@@ -22,6 +22,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 import cv2 as cv
 
 from approx import approx
+from skimage import draw
 
 class Ui_MainWindow(QMainWindow):
     plot_title_raw = "Raw data "
@@ -321,7 +322,7 @@ class Ui_MainWindow(QMainWindow):
         self.label_4.setText(_translate("MainWindow", "Radius"))
 
     def setupLater(self):
-        print("setupLater ... ")
+        #print("setupLater ... ")
         self.filename = ''
         self.data = {}
         self.dataM = {}
@@ -349,10 +350,10 @@ class Ui_MainWindow(QMainWindow):
         self.pushButton_2.clicked.connect(lambda: self.approx())
         
 
-        self.setAnalyzeButtons(False)
+        self.setButtonsEnable(False)
         
 
-    def setAnalyzeButtons(self, state):
+    def setButtonsEnable(self, state):
         
         self.saveButton.setEnabled(state)
         self.displayGraphButton.setEnabled(state)
@@ -365,6 +366,8 @@ class Ui_MainWindow(QMainWindow):
         self.saveGraphButtonM.setEnabled(state)
         self.displayImageButtonM.setEnabled(state)
         self.saveImageButtonM.setEnabled(state)
+
+        self.pushButton_2.setEnabled(state)
 
     def exit(self):
         print("exiting...")
@@ -452,7 +455,7 @@ class Ui_MainWindow(QMainWindow):
                             #self.saveFile()
 
                             
-                            self.setAnalyzeButtons(True)
+                            self.setButtonsEnable(True)
                             print("measurement done!")
                             #self.statusbar.setText("measurements collected!")
                             self.startButton.setEnabled(True)
@@ -479,7 +482,7 @@ class Ui_MainWindow(QMainWindow):
         approx(self.dataM, self.spinBox_2.value())
 
 
-    def morph(self, struct_size):
+    def morph(self, struct_size, struct_type):
         w, h = 180, 400
         img = [[0 for x in range(w)] for y in range(h)] 
         img = np.zeros((h, w))
@@ -496,7 +499,16 @@ class Ui_MainWindow(QMainWindow):
         
         #img = cv.imread('image.bmp', 0)
         #img = img/255
-        kernel = np.ones((struct_size, struct_size),np.uint8)
+
+        kernel = np.zeros((struct_size, struct_size))
+
+        if struct_type == 1:
+            kernel = np.ones((struct_size, struct_size),np.uint8)
+        elif struct_type ==0:
+            kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE,(struct_size,struct_size))
+
+            
+
         opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)
         closing = cv.morphologyEx(opening, cv.MORPH_CLOSE, kernel)
 
@@ -516,11 +528,17 @@ class Ui_MainWindow(QMainWindow):
 
         self.dataM = data
 
+    def MorphOpen(self, data, kernel):
+        return cv.morphologyEx(data, cv.MORPH_OPEN, kernel)
+
     def updateMorph(self):
         struct_size = self.spinBox.value()
+        struct_type = self.comboBox.currentIndex()
+
         print("Struct_size = " + str(struct_size))
+        print("Struct type = " + str(struct_type))
         #todo: check if update necessary
-        self.morph(struct_size)
+        self.morph(struct_size, struct_type)
         
 
     def connect(self):
@@ -598,7 +616,7 @@ class Ui_MainWindow(QMainWindow):
         
         #print(self.data)
         self.saveButton.setEnabled(True)
-        self.setAnalyzeButtons(True)
+        self.setButtonsEnable(True)
                 
     def old_save(data):
         DIR = os.getcwd() + "\\data"
