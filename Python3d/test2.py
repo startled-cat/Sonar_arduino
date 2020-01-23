@@ -5,6 +5,7 @@ from mpl_toolkits import mplot3d
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 import csv
 import os
@@ -16,6 +17,9 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import QtGui, QtCore, QtWidgets
+
+from Punkt import Punkt
+from Pomiar import Pomiar
 
 
 def save_file_3d(self, data):
@@ -47,7 +51,7 @@ def save_file_3d(self, data):
 def open_file_3d():
     print("opening file...")
     #self.filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File', ".", "(*.csv)")[0]
-    filename = "data/great-angles.csv"
+    filename = "data/great-angles-2d.csv"
     data = {}
     inner_data = {}
     count = 0
@@ -78,20 +82,40 @@ def new_create_graph(data, title):
     zdata = []
     xdata = []
     ydata = []
-    # convert data to coordinates
 
-    for xaxis, data_item in data.items():
-        for yaxis in data_item:
-            xdata.append(float(data_item[yaxis])*math.sin(math.radians(int(yaxis)))*math.cos(math.radians(int(xaxis))))
-            ydata.append(float(data_item[yaxis])*math.sin(math.radians(int(xaxis))))
-            zdata.append(float(data_item[yaxis])*math.cos(math.radians(int(yaxis)))*math.cos(math.radians(int(xaxis))))
+    # convert data to coordinates
+    for j in range(0, 18):
+        for xaxis, data_item in data.items():
+            for yaxis in data_item:
+                xdata.append(float(data_item[yaxis])*math.sin(math.radians(int(yaxis)))*math.cos(math.radians(int(xaxis))) + (random.randint(-100, 100) / 100.0)) 
+                #ydata.append(float(data_item[yaxis])*math.sin(math.radians(int(xaxis))))
+                ydata.append(j * 10)
+                zdata.append(float(data_item[yaxis])*math.cos(math.radians(int(yaxis)))*math.cos(math.radians(int(xaxis))) + (random.randint(-100, 100) / 100.0)) 
+        
+        #i += 10
 
     # Data for three-dimensional scattered points
-    ax.scatter3D(xdata, ydata, zdata, c=zdata, cmap='OrRd_r')
+    ax.scatter3D(xdata, zdata, ydata, c=zdata, cmap='OrRd_r')
+    ax.set_xlabel('z axis')
+    ax.set_ylabel('x axis')
+    ax.set_zlabel('y axis')
     plt.title(title)
     plt.show()
 
 
 if __name__ == "__main__":
-    data = open_file_3d()
-    new_create_graph(data, "TEST")
+    p = Punkt(10, 30, 40)
+    print(p.calculate())
+
+    pomiar = Pomiar("random ttiel")
+    pomiar.add_point(p)
+
+    pomiar.save_pickle("pickle_pomiar.obj")
+    print("saved")
+
+    pomiar.save_with_title("")
+
+    pomiar2 = Pomiar.load_pickle(pomiar.mes_title + ".obj")
+    pomiar2.print_info()
+
+
