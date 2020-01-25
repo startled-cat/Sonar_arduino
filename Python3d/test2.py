@@ -84,26 +84,73 @@ def new_create_graph(data, title):
     ydata = []
 
     # convert data to coordinates
-    for j in range(0, 18):
-        for xaxis, data_item in data.items():
-            for yaxis in data_item:
-                xdata.append(float(data_item[yaxis])*math.sin(math.radians(int(yaxis)))*math.cos(math.radians(int(xaxis))) + (random.randint(-100, 100) / 100.0)) 
-                #ydata.append(float(data_item[yaxis])*math.sin(math.radians(int(xaxis))))
-                ydata.append(j * 10)
-                zdata.append(float(data_item[yaxis])*math.cos(math.radians(int(yaxis)))*math.cos(math.radians(int(xaxis))) + (random.randint(-100, 100) / 100.0)) 
+    for vertical_angle, data_item in data.items():
+        for horizontal_angle in data_item:
+            xdata.append(float(data_item[horizontal_angle]) * math.sin(math.radians(90 - int(vertical_angle))) * math.cos(math.radians(int(horizontal_angle))))
+            ydata.append(float(data_item[horizontal_angle]) * math.sin(math.radians(90 - int(vertical_angle))) * math.sin(math.radians(int(horizontal_angle))))
+            zdata.append(float(data_item[horizontal_angle]) * math.cos(math.radians(90 - int(vertical_angle))))
         
         #i += 10
 
+    print(zdata)
+
     # Data for three-dimensional scattered points
-    ax.scatter3D(xdata, zdata, ydata, c=zdata, cmap='OrRd_r')
-    ax.set_xlabel('z axis')
-    ax.set_ylabel('x axis')
-    ax.set_zlabel('y axis')
+    ax.scatter3D(xdata, ydata, zdata, c=zdata, cmap='OrRd_r')
+    ax.set_xlabel('x axis')
+    ax.set_ylabel('y axis')
+    ax.set_zlabel('z axis')
     plt.title(title)
     plt.show()
 
 
+def start_mes(self):
+    # Disable wszystkie guziki w gui na czas robienia pomiarów...
+
+    # To będą const rzeczy
+    self.max_steps = 4096
+    self.max_deg = 360
+
+    # Te rzeczy będą brane z gui
+    ver_deg = 1         # reprezentuje krok w stopniach vertical
+    hor_deg = 10        # reprezentuje krok w stopniach horizontal
+    num_mes_per_deg = 1    # reprezentuje ilosc pomiarow na jeden krok
+
+    ver_step = int((ver_deg * self.max_steps) / self.max_deg)
+    hor_step = int((hor_deg * self.max_steps) / self.max_deg)
+
+    self.ser.write(bytes(num_mes_per_deg))
+    self.ser.write(ver_step)
+    self.ser.write(hor_step)
+
+    num_steps = int(((self.max_steps / 2) / hor_step) + ((self.max_steps) / 4) / ver_step) 
+
+    count = 0
+    seq = []
+    pomiar = Pomiar("wartosc z textboxa", num_steps)     # self.textBox.getText()   
+
+    while True:
+        for c in self.ser.read():
+            if chr(c) == '\n':
+                point = Punkt(seq[0], seq[1], seq[2])
+                pomiar.add_point(point)
+
+                if count == pomiar.mes_num:
+                    # odblokuj gui...
+                    print("measurement done!")
+                    self.ser.close()
+                    print("connection closed")
+                    return pomiar
+
+                seq = []
+                count += 1
+                break
+
+            seq.append(chr(c))
+
+
 if __name__ == "__main__":
+
+    '''
     p = Punkt(10, 30, 40)
     print(p.calculate())
 
@@ -117,5 +164,15 @@ if __name__ == "__main__":
 
     pomiar2 = Pomiar.load_pickle(pomiar.mes_title + ".obj")
     pomiar2.print_info()
+    '''
 
+    data = open_file_3d()
+    p = Pomiar("test", 1)
+
+    for vertical_angle, data_item in data.items():
+        for horizontal_angle in data_item:
+            p.add_point(Punkt(data_item[horizontal_angle], horizontal_angle, vertical_angle))
+
+    p.calculate_all()
+    p.display_plot()
 
