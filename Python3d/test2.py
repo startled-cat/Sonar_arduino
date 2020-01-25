@@ -103,49 +103,7 @@ def new_create_graph(data, title):
     plt.show()
 
 
-def start_mes(self):
-    # Disable wszystkie guziki w gui na czas robienia pomiarów...
 
-    # To będą const rzeczy
-    self.max_steps = 4096
-    self.max_deg = 360
-
-    # Te rzeczy będą brane z gui
-    ver_deg = 1         # reprezentuje krok w stopniach vertical
-    hor_deg = 10        # reprezentuje krok w stopniach horizontal
-    num_mes_per_deg = 1    # reprezentuje ilosc pomiarow na jeden krok
-
-    ver_step = int((ver_deg * self.max_steps) / self.max_deg)
-    hor_step = int((hor_deg * self.max_steps) / self.max_deg)
-
-    self.ser.write(bytes(num_mes_per_deg))
-    self.ser.write(ver_step)
-    self.ser.write(hor_step)
-
-    num_steps = int(((self.max_steps / 2) / hor_step) + ((self.max_steps) / 4) / ver_step) 
-
-    count = 0
-    seq = []
-    pomiar = Pomiar("wartosc z textboxa", num_steps)     # self.textBox.getText()   
-
-    while True:
-        for c in self.ser.read():
-            if chr(c) == '\n':
-                point = Punkt(seq[0], seq[1], seq[2])
-                pomiar.add_point(point)
-
-                if count == pomiar.mes_num:
-                    # odblokuj gui...
-                    print("measurement done!")
-                    self.ser.close()
-                    print("connection closed")
-                    return pomiar
-
-                seq = []
-                count += 1
-                break
-
-            seq.append(chr(c))
 
 
 if __name__ == "__main__":

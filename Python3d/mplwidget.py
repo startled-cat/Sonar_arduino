@@ -1,12 +1,11 @@
-# ------------------------------------------------------
-# -------------------- mplwidget.py --------------------
-# ------------------------------------------------------
 from PyQt5.QtWidgets import*
 
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
-from matplotlib.figure import Figure
+from matplotlib.figure import Figure        
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import axes3d, Axes3D
 
     
 class MplWidget(QWidget):
@@ -22,7 +21,6 @@ class MplWidget(QWidget):
         vertical_layout.addWidget(self.canvas)
         vertical_layout.addWidget(self.navi_toolbar)
         
-        self.canvas.axes = self.canvas.figure.add_subplot(111)
+        self.canvas.axes = self.canvas.figure.add_subplot(111, projection='3d')
         self.setLayout(vertical_layout)
-        
         
