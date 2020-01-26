@@ -41,6 +41,10 @@ class Ui(QtWidgets.QMainWindow):
 
         self.pomiar = None
         self.pomiar_morph = None
+        self.x_list = None
+        self.y_list = None
+
+        self.setWindowTitle("Bonar")
 
         self.setUi()
         self.disable_all()
@@ -109,8 +113,6 @@ class Ui(QtWidgets.QMainWindow):
     def enable_graph_opt(self):
         self.display2dGraph.setEnabled(True)
         self.display3dGraph.setEnabled(True)
-        self.display2dGraphApprox.setEnabled(True)
-        self.display2dGraphMorph.setEnabled(True)
         self.approxSetParam.setEnabled(True)  
         self.morphSetParam.setEnabled(True)   
 
@@ -130,15 +132,21 @@ class Ui(QtWidgets.QMainWindow):
             paramet = dialog.getInputs()
             self.update_morph(paramet[0], paramet[1])
 
+        self.display2dGraphMorph.setEnabled(True)
+
     def set_approx_parameters(self):
         dialog = InputDialog2()
         if dialog.exec():
             self.approx(dialog.getInputs())
 
+        self.display2dGraphApprox.setEnabled(True)
+
     def approx(self, inputs):
         print("event handler")
         self.update_morph(inputs[0], inputs[1])
-        self.x_list, self.y_list = approx(self.pomiar_morph, inputs[2])
+        self.x_list, self.y_list = approx(self.pomiar_morph, inputs[2], self)
+        print(self.x_list)
+        print(self.y_list)
 
     def swap_stacked_widget(self, i):
         print(i)
@@ -209,6 +217,8 @@ class Ui(QtWidgets.QMainWindow):
             self.typeBox.setEnabled(True)
             self.enable_graph_opt()
             self.dimension_choice()
+
+        self.setWindowTitle("Bonar - " + filename)
 
     def save_file_pomiar(self):
         self.pomiar.save_with_title("")
@@ -313,13 +323,13 @@ class Ui(QtWidgets.QMainWindow):
         self.MplWidget2daprox.canvas.axes.set_ylabel('y axis')
         self.MplWidget2daprox.canvas.draw()
 
-        self.MplWidget2daprox.canvas2.axes.clear()
-        self.MplWidget2daprox.canvas2.axes.plot(self.x_list, self.y_list)
-
         # Data for two-dimensional scattered points (2nd graph)
         self.MplWidget2daprox.canvas2.axes.set_xlabel('x axis')
         self.MplWidget2daprox.canvas2.axes.set_ylabel('y axis')
-        self.MplWidget2daprox.canvas2.draw()
+
+        self.MplWidget2daprox.canvas2.axes = plt.gca()
+        self.MplWidget2daprox.canvas2.axes.set_xlim([-100, 100])
+        self.MplWidget2daprox.canvas2.axes.set_ylim([0, 80])
 
     def update_morph(self, struct_size, struct_type):
         # todo: check if update necessary

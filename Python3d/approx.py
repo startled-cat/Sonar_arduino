@@ -2,35 +2,28 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-def approx(data, radius):
-    x, y = toXY(data)
-
+def approx(pomiar_morph, radius, main):
     z = [] 
 
-    for i in range(0, len(data.x_list)-1, 20):
-        tupleoflists = approximation(radius, x, y, x[i], y[i])       
+    main.MplWidget2daprox.canvas2.axes.clear()
+
+    for i in range(0, pomiar_morph.mes_num-1, 20):                             
+        tupleoflists = approximation(radius, pomiar_morph.x_list, pomiar_morph.y_list, pomiar_morph.x_list[i], pomiar_morph.y_list[i])       
         temp = tupleoflists[0]                                  
         z.append(temp[0])                                       
         trendpoly = np.poly1d(tupleoflists[0])
 
-        axes = plt.gca()
-        axes.set_xlim([-100, 100])
-        axes.set_ylim([0, 80])
         x_line = range(-400, 400, 1)
         y_line = trendpoly(x_line)
 
+        main.MplWidget2daprox.canvas2.axes.set_xlim([-100, 100])
+        main.MplWidget2daprox.canvas2.axes.set_ylim([0, 80])
+        main.MplWidget2daprox.canvas2.axes.plot(x_line, y_line)
+
+    main.MplWidget2daprox.canvas2.draw()
 
     return x_line, y_line
 
-def toXY(data):
-    y = []
-    x = []
-    i = 0
-    while i < len(data.x_list) :
-        y.append(math.sin(math.radians(data.x_list[i])) * (data.y_list[i]))
-        x.append(math.cos(math.radians(data.x_list[i])) * (data.y_list[i]))
-        i += 1
-    return x, y
 
                                                                        
 def approximation(r, x, y, start_x, start_y):                          
