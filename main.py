@@ -1,5 +1,66 @@
 print("hello")
 
+
+class Arduino:
+
+    def __init__(self):
+        self.ser = 0
+        self.measurements = 0
+        self.h_step = 0
+        self.v_step = 0
+        self.baudrate = 38400
+        self.com_port = 'COM3'
+    
+    def connect(self):
+        self.ser = serial.Serial(
+        port=self.com_port,\
+        baudrate=self.baudrate,\
+        parity=serial.PARITY_NONE,\
+        stopbits=serial.STOPBITS_ONE,\
+        bytesize=serial.EIGHTBITS,\
+            timeout=0)
+        print("connected to: " + self.ser.portstr)
+
+
+
+    def disconnect(self):
+        self.ser.close()
+
+    def start(self, measurements, h_step, v_step):
+        self.measurements = measurements
+        self.h_step = h_step
+        self.v_step = v_step
+        sent_bytes = self.ser.write(struct.pack("<BHH", measurements, h_step, v_step))
+
+    def get_pomiary(self):
+        r = []
+        h = []
+        v = []
+
+        how_many_measurements = (4076/2/self.h_step) * (4076/4/self.v_step) # ilosc wszystkich pomiarow do zrobienia
+        print("how_many_measurements = " + str(how_many_measurements))
+        i = 0
+        while i < how_many_measurements:
+            
+            h1=self.ser.readline() 
+            if h1:
+                if 1 == 1: # len(h1) == (4+2+2+2):
+                    #is legit pomiar
+                    print(i)
+                    i1, i2, i3 = struct.unpack('<LHHxx', h1)
+                    print("=======================")
+                    print("r = " + str(i1))
+                    print("h = " + str(i2))
+                    print("v = " + str(i3))
+                    r.append(i1)
+                    h.append(i2)
+                    v.append(i3)
+                    #print("=======================")
+                    #print(' '.join(format(ord(x), 'b') for x in h1))
+                    i += 1
+
+
+
 import serial
 import time
 import statistics
@@ -7,154 +68,101 @@ import math
 import matplotlib.pyplot as plt
 import csv
 import os
+import struct 
 
-ser = serial.Serial(
-    port='COM3',\
-    baudrate=9600,\
-    parity=serial.PARITY_NONE,\
-    stopbits=serial.STOPBITS_ONE,\
-    bytesize=serial.EIGHTBITS,\
-        timeout=0)
 
-print("connected to: " + ser.portstr)
+print("creating arduino object ... ")
+a = Arduino()
+print("connecting ... ")
+a.connect()
 
 time.sleep(3)
 
-#this will store the line
-seq = []
-count = 1
-
-measurements = input("Podaj liczbę pomiarów do wykonania: ")
-measurements = measurements.strip()
-
-if measurements == '2':
-    ser.write(bytes(measurements, 'utf-8'))
-elif measurements == '3':
-    ser.write(bytes(measurements, 'utf-8'))
-else:
-    measurements = '1'
-    ser.write(bytes(measurements, 'utf-8'))
-
-measurements = int(measurements)
-
-m = [0]*181
-
-time.sleep(3)
+print("starting ... ")
+a.start(2, 185, 105)
+print("getting ... ")
+a.get_pomiary()
+a.disconnect()
 
 
-def create_graph(data):
-    fig = plt.figure(figsize=(10, 5))
-    ax = fig.add_subplot()
-    # Move left y-axis and bottom x-axis to centre, passing through (0,0)
-    ax.spines['left'].set_position('center')
-    ax.spines['bottom'].set_position('center')
-    # Eliminate upper and right axes
-    ax.spines['right'].set_color('none')
-    ax.spines['top'].set_color('none')
-    # Show ticks in the left and lower axes only
-    ax.xaxis.set_ticks_position('bottom')
-    ax.yaxis.set_ticks_position('left')
-    y = []
-    x = []
-    # Initialize with no points, and circle markers, return Line2D object
-    li, = ax.plot(x, y, '.')
-    # Set default axis in range of -100 to 100
-    # plt.axis([-200, 200, -200, 200])
-    axes = plt.gca()
-    axes.set_xlim([-400, 400])
-    axes.set_ylim([0, 400])
 
-    ax.spines['left'].set_position(('data', 0))
-    ax.spines['bottom'].set_position(('data', 0))
-    # Interactive plot ON
-    # plt.ion()
 
-    # for key, value in self.data_dict.items():
+# def packIntegerAsB(value):
+#     """Packs a python 4 byte unsigned integer to an arduino unsigned long"""
+#     return struct.pack('b', value)    
+
+# def packIntegerAsULong(value):
+#     """Packs a python 4 byte unsigned integer to an arduino unsigned long"""
+#     return struct.pack('h', value)   
+
+# ser = serial.Serial(
+#     port='COM3',\
+#     baudrate=115200,\
+#     parity=serial.PARITY_NONE,\
+#     stopbits=serial.STOPBITS_ONE,\
+#     bytesize=serial.EIGHTBITS,\
+#         timeout=0)
+
+# print("connected to: " + ser.portstr)
+
+# time.sleep(3)
+
+# #this will store the line
+# print("writing ... ")
+# send_bytes = ser.write(struct.pack(">BHH", 3, 200, 100))
+# print("bytes sent = " + str(send_bytes))
+
+# i = 0
+# buff = struct.pack("<BHH", 3, 200, 100)
+# for e in buff:
+#     print(str(i) + " > " + str(int(e)))
+#     i += 1
+
+# # print(" ... writing 3")
+# # send_bytes = ser.write(packIntegerAsB(3))
+# # print(str(send_bytes) + " ... writing 200")
+# # send_bytes = ser.write(packIntegerAsULong(200))
+# # print(str(send_bytes) + " ... writing 100")
+# # send_bytes = ser.write(packIntegerAsULong(100))
+# # print(str(send_bytes))
+# buff = []
+
+# while True:
+
+#     h1=ser.readline()
     
-    i = 0
-    while i < 180:
-        y.append(math.sin(math.radians(i)) * data[i])
-        x.append(math.cos(math.radians(i)) * data[i])
-        # print(y)
-        # print(x)
-        # plt.pause(0.1)
-        i += 1
-
-    li.set_ydata(y)
-    li.set_xdata(x)
-    plt.show()
-
-
-def save(data):
-    DIR = os.getcwd() + "\\data"
-    names = os.listdir(DIR)
-
-    index = len(names)
-    index += 1
-
-    with open(DIR + "\\data" + str(index) + ".csv", 'w', newline='') as file:
-        angle = 0
-        file = csv.writer(file, delimiter=',')
-        for element in data:
-            file.writerow([str(angle), str(element)])
-            angle += 1
-
-
-def read(filename):
-    DIR = os.getcwd() + os.path.sep
-    with open(DIR + filename) as file:
-        data = []
-        file_reader = csv.reader(file, delimiter=',')
-        for row in file_reader:
-            data.append(float(row[1]))
-            
-    return data
+#     if h1:
+#         print(str(h1))
+#         print("=======================")
+#         print(' '.join(format(ord(x), 'b') for x in str(h1)))
+#         print("=======================")
+#         if len(h1) == (4+2+2+2):
+#             i1, i2, i3 = struct.unpack('<LHHxx', h1)
+#             print("=======================")
+#             print("1 = " + str(i1))
+#             print("2 = " + str(i2))
+#             print("3 = " + str(i3))
+        
     
-'''
-def ArduinoSend(data):
-    ser.write(format(('{}\n').format(data)).encode())
+    # if ser.read() :
+    #     print("avg : ") # 4 bytes
+    #     buff = ser.read()
+    #     #avg = struct.unpack('i', buff)
+    #     print(buff)
 
-#ArduinoSend("")
-'''
-print("written")
+    # if ser.read() :
+    #     print("h position : ") # 2 bytes
+    #     buff = ser.read()
+    #     #h_pos = struct.unpack('i', buff)
+    #     print(buff)
 
-
-while True:
-    for c in ser.read():
-        if chr(c) == '\n':
-            data = joined_seq.split(",")
-            try:
-                # print(str(data))
-                # print(str(data.__len__()))
-                if data.__len__() < 2 :
-                    break
-                angle = int(data[0])
-                distance = []
-                i = 0
-                while i < measurements:
-                    distance.append(int(data[i+1]) / 58.2)
-                    i += 1
-                print("angle: " + str(angle) + "; " + str(distance))
-                m[angle] = statistics.median(distance);
-                if angle == 180:
-                    print("creating graph ... ")
-                    for (i, item) in enumerate(m, start=1):
-                        print(i, item)
-
-                    create_graph(m)
-                    save(m)
-                    print("done!")
-            except ValueError:
-                print(joined_seq)
-            except IndexError:
-                print(joined_seq)
-
-            seq = []
-            count += 1
-            break
-        seq.append(chr(c))  # convert from ANSII
-        joined_seq = ''.join(str(v) for v in seq)  # Make a string from arrays
+    # if ser.read() :
+    #     print("v position : ") # 2 bytes
+    #     buff = ser.read()
+    #     #v_pos = struct.unpack('i', buff)
+    #     print(buff)
 
 
-ser.close()
+
+#ser.close()
 
