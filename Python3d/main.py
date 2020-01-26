@@ -26,6 +26,7 @@ from Punkt import Punkt
 from Pomiar import Pomiar
 from approx import approx
 
+from Arduino import Arduino
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
@@ -92,6 +93,8 @@ class Ui(QtWidgets.QMainWindow):
         self.morphSetParam.triggered.connect(lambda: self.set_morph_parameters())
         self.display2dGraphApprox.triggered.connect(lambda: self.swap_stacked_widget(3))
         self.approxSetParam.triggered.connect(lambda: self.set_approx_parameters())
+
+        self.ardiuno = Arduino()
 
     def disable_all(self):
         self.startButton.setEnabled(False)
@@ -168,25 +171,26 @@ class Ui(QtWidgets.QMainWindow):
         try:
             print("establishing serial connection ... ")
 
-            self.ser = serial.Serial(
-                port='COM3',
-                baudrate=115200,
-                parity=serial.PARITY_NONE,
-                stopbits=serial.STOPBITS_ONE,
-                bytesize=serial.EIGHTBITS,
-                timeout=0
-            )
+            # self.ser = serial.Serial(
+            #     port='COM3',
+            #     baudrate=115200,
+            #     parity=serial.PARITY_NONE,
+            #     stopbits=serial.STOPBITS_ONE,
+            #     bytesize=serial.EIGHTBITS,
+            #     timeout=0
+            # )
+            self.ardiuno.connect()
 
             print("serial object created")
-            time.sleep(3)
+            #time.sleep(3)
 
             self.statusBar.setText("connected to : " + self.ser.portstr)
 
         except Exception as e:
             print("error while establishing serial connection : " + str(e))
             self.connectButton.setEnabled(True)
-            self.showdialog(
-                "Error", "error while establishing serial connection : " + str(e))
+            #self.showdialog(
+            #    "Error", "error while establishing serial connection : " + str(e))
 
         print("connection established!")
         self.connectButton.setText("Reconnect")
@@ -238,39 +242,50 @@ class Ui(QtWidgets.QMainWindow):
         hor_step = int((hor_deg * self.MAX_STEPS) / self.MAX_DEG)
 
         # Send data to arduino
-        self.ser.write(bytes(num_mes_per_deg))
-        self.ser.write(ver_step)
-        self.ser.write(hor_step)
+        print("num_mes_per_deg = " + str(num_mes_per_deg))
+        print("hor_step = " + str(hor_step))
+        print("ver_step = " + str(ver_step))
+        self.ardiuno.start(num_mes_per_deg, hor_step, ver_step)
+        # self.ser.write(bytes(num_mes_per_deg))
+        # self.ser.write(ver_step)
+        # self.ser.write(hor_step)
 
         # Calculate number of steps
         num_steps = int(((self.MAX_STEPS / 2) / hor_step) +
                         ((self.MAX_STEPS) / 4) / ver_step)
 
-        count = 0
+        #count = 0
         seq = []
         self.pomiar = Pomiar(self.title.text(), num_steps)
 
         # Read data
-        while True:
-            for c in self.ser.read():
-                if chr(c) == '\n':
-                    point = Punkt(seq[0], seq[1] / 180, seq[2] / 180)
-                    self.pomiar.add_point(point)
+        temp_pomiar = self.ardiuno.get_pomiary()
+        self.pomiar.points_list = temp_pomiar.points_list
+        self.dimension_choice()
+        print("measurement done!")
+        self.ardiuno.disconnect()
+        print("connection closed")
+        
+        # while True:
+        #     for c in self.ser.read():
+        #         if chr(c) == '\n':
+        #             point = Punkt(seq[0], seq[1] / 180, seq[2] / 180)
+        #             self.pomiar.add_point(point)
 
-                    if count == self.pomiar.mes_num:
-                        self.dimension_choice()
-                        print("measurement done!")
-                        self.ser.close()
-                        print("connection closed")
-                        return self.pomiar
+        #             if count == self.pomiar.mes_num:
+        #                 self.dimension_choice()
+        #                 print("measurement done!")
+        #                 self.ser.close()
+        #                 print("connection closed")
+        #                 return self.pomiar
 
-                    seq = []
-                    count += 1
-                    break
+        #             seq = []
+        #             count += 1
+        #             break
 
-                self.completed += int((num_steps * 3) / 100)
-                self.progressBar.setValue(self.completed)
-                seq.append(chr(c))
+        #         self.completed += int((num_steps * 3) / 100)
+        #         self.progressBar.setValue(self.completed)
+        #         seq.append(chr(c))
 
         self.pomiar.calculate_all()
         self.create_graph()

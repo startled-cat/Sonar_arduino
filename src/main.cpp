@@ -262,6 +262,21 @@ void loop() {
       
       h_move_direction = !h_move_direction;
       //v_move_direction = !v_move_direction;
+      //Serial.write()
+      union ulong_buffer l;
+      l.l = (unsigned long)0;
+      Serial.write(l.a[0]);
+      Serial.write(l.a[1]);
+      Serial.write(l.a[2]);
+      Serial.write(l.a[3]);
+      //Serial.print(" h pos : ");
+      Serial.write(1);
+      Serial.write(1);
+      //Serial.print(" v pos : ");
+      Serial.write(1);
+      Serial.write(1);
+      Serial.println();
+      //Serial.write(69);  
       while(true){
         int x = 1;
         int y = 7;
@@ -340,12 +355,17 @@ void sonar(byte measurements, unsigned int h_pos, unsigned int v_pos){
   Serial.write(l.a[2]);
   Serial.write(l.a[3]);
 	//Serial.print(" h pos : ");
+  h_pos += 32;
   Serial.write(h_pos);
   Serial.write(h_pos >> 8);
+  h_pos -= 32;
   //Serial.print(" v pos : ");
+  v_pos += 32;
   Serial.write(v_pos);
   Serial.write(v_pos >> 8);
-  Serial.println(); 
+  v_pos -= 32;
+  Serial.println();
+ // Serial.write(69); 
   
 }
 
