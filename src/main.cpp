@@ -251,10 +251,10 @@ void loop() {
       //move one step up
       if(DEBUG) Serial.println("moving vertically up");
       myStepperV.move(v_move_direction, v_step);
-    }while(!(myStepperV.getStep() != 0 && myStepperV.getStep() >= (STEPS_FOR_ROTATION / 4)));
+    }while(!(myStepperV.getStep() != 0 && myStepperV.getStep() >= (STEPS_FOR_ROTATION / 6)));
 
     
-    if(myStepperV.getStep() != 0 && myStepperV.getStep() >= (STEPS_FOR_ROTATION / 4)){
+    if(myStepperV.getStep() != 0 && myStepperV.getStep() >= (STEPS_FOR_ROTATION / 6)){
       //pomiar done, bo back to starting position
       if(DEBUG) Serial.println("pomiar done, resetting position ... ");
       myStepperH.moveTo(h_move_direction, h_starting_pos);

@@ -40,13 +40,16 @@ class Pomiar:
     def display_plot(self):
         fig = plt.figure()
         ax = plt.axes(projection='3d')
-
+         
         # Data for three-dimensional scattered points
-        ax.scatter3D(self.x_list, self.y_list,
+        ax.scatter3D([self.x_list], self.y_list,
                      self.z_list, c='r', cmap='OrRd_r')
+        ax.scatter3D([0], [0],
+                     [0], c='b', cmap='OrRd_b', s=60)
         ax.set_xlabel('x axis')
         ax.set_ylabel('y axis')
         ax.set_zlabel('z axis')
+        
         plt.title(self.mes_title)
         plt.show()
 

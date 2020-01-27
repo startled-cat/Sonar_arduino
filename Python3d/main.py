@@ -298,7 +298,7 @@ class Ui(QtWidgets.QMainWindow):
     def create_graph(self):
         self.MplWidget.canvas.axes.clear()
         self.MplWidget.canvas.axes.scatter3D(self.pomiar.x_list, self.pomiar.y_list, self.pomiar.z_list, c='r', cmap='OrRd_r')
-        
+        self.MplWidget.canvas.axes.scatter3D([0], [0], [0], c='b', cmap='OrRd_r', s=250)
         # Data for three-dimensional scattered points
         self.MplWidget.canvas.axes.set_xlabel('x axis')
         self.MplWidget.canvas.axes.set_ylabel('y axis')
