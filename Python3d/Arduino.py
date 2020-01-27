@@ -65,17 +65,20 @@ class Arduino:
                 try:
                     i1, i2, i3 = struct.unpack('<LHHxx', bytes(h1))
                     print("=======================")
-                    print("r = " + str(i1))
-                    print("h = " + str(i2))
-                    print("v = " + str(i3))
+                   # print("r = " + str(i1))
+                   # print("h = " + str(i2))
+                   # print("v = " + str(i3))
                     if(i1==0 and i2==257 and i3==257):
                         break
                     if i1 == 0 and i2 == 1 and i3 == 1:
                         break
                     
-                    distance = i1 / 58.2
-                    h_ang = ((i2-32) /4076) * 360
-                    v_ang = ((i3-32) /4076) * 360
+                    distance = i1*0.034/2
+                    h_ang = ((i2) /4076) * 360
+                    v_ang = ((i3) /4076) * 360
+                    print("r = " + str(distance))
+                    print("h = " + str(h_ang))
+                    print("v = " + str(v_ang))
                     p = Punkt(distance, h_ang, v_ang)
                     self.pomiar.add_point(p)
                 except:

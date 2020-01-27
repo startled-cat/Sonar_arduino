@@ -218,6 +218,7 @@ class Ui(QtWidgets.QMainWindow):
             self, 'Open File', ".", "(*.obj)")[0]
         if filename != "":
             self.pomiar = Pomiar.load_pickle(filename)
+            self.pomiar.calculate_all()
             self.create_graph()
             self.typeBox.setEnabled(True)
             self.enable_graph_opt()

@@ -231,7 +231,7 @@ void loop() {
     do{
       //while pomiar not finished
       
-      for(int curr_h_step = 0; curr_h_step < STEPS_FOR_ROTATION / 2; curr_h_step += h_step){
+      for(int curr_h_step = 0; curr_h_step < STEPS_FOR_ROTATION / 2 - 1; curr_h_step += h_step){
 
         if(DEBUG) Serial.println("moving horizontally by h_step)");
 
