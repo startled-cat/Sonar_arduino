@@ -2,6 +2,7 @@ import serial
 import time
 import os
 import struct 
+import copy
 
 from Pomiar import Pomiar
 from Punkt import Punkt
@@ -41,31 +42,34 @@ class Arduino:
         sent_bytes = self.ser.write(struct.pack("<BHH", measurements, h_step, v_step))
 
     def get_pomiary(self):
-        r = []
-        h = []
-        v = []
-
         how_many_measurements = (4076/2/self.h_step) * (4076/4/self.v_step) # ilosc wszystkich pomiarow do zrobienia
         self.pomiar = Pomiar("czxczxc", how_many_measurements)
         print("how_many_measurements = " + str(how_many_measurements))
         i = 0
+        h2=None
         while i < how_many_measurements:#todo 
             count = 0
             seq = []
             
             h1=self.ser.readline() 
+            
             if h1:
-               
-                print("len1 = " + str(len(h1)))
-                if(len(h1))<10:
-                    h1=h1+self.ser.readline()
-                print("len2 = " + str(len(h1)))
+                if(h2!=None):
+                    h1=h2+h1
+                    print("len1 = " + str(len(h1)) + " "+str(len(h2)))
+                    h2=None
+                if(len(h1)<10 and h2==None):
+                    h2=copy.copy(h1)
+                
+
                 try:
                     i1, i2, i3 = struct.unpack('<LHHxx', bytes(h1))
                     print("=======================")
                     print("r = " + str(i1))
                     print("h = " + str(i2))
                     print("v = " + str(i3))
+                    if(i1==0 and i2==257 and i3==257):
+                        break
                     if i1 == 0 and i2 == 1 and i3 == 1:
                         break
                     
@@ -80,33 +84,5 @@ class Arduino:
             
 
                 
-                
-
-
-            # h1=self.ser.readline() 
-            # if h1:
-            #     print("len(h1) = " + str(len(h1)))
-            #     if len(h1) == (4+2+2+2):
-            #         #is legit pomiar
-            #         print(i)
-            #         i1, i2, i3 = struct.unpack('<LHHxx', h1)
-            #         print("=======================")
-            #         print("r = " + str(i1))
-            #         print("h = " + str(i2))
-            #         print("v = " + str(i3))
-            #         if i1 == 0 and i2 == 0 and i3 == 0:
-            #             break
-            #         r.append(i1)
-            #         h.append(i2)
-            #         v.append(i3)
-
-            #         distance = i1 / 58.2
-            #         h_ang = i2 /4076 * 360
-            #         v_ang = i3 /4076 * 360
-            #         p = Punkt(distance, h_ang, v_ang)
-                    
-            #         self.pomiar.add_point(p)
-            #         #print("=======================")
-            #         #print(' '.join(format(ord(x), 'b') for x in h1))
-            #         i += 1
+        print("done lol")              
         return self.pomiar

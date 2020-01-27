@@ -1,6 +1,7 @@
 import time
 import statistics
 import math
+import importlib
 from mpl_toolkits import mplot3d
 import matplotlib
 import matplotlib.pyplot as plt
@@ -259,10 +260,12 @@ class Ui(QtWidgets.QMainWindow):
         self.pomiar = Pomiar(self.title.text(), num_steps)
 
         # Read data
+        print("measurement in progress")
         temp_pomiar = self.ardiuno.get_pomiary()
+        print("measurement done 1!")
         self.pomiar.points_list = temp_pomiar.points_list
         self.dimension_choice()
-        print("measurement done!")
+        print("measurement done 2!")
         self.ardiuno.disconnect()
         print("connection closed")
         
