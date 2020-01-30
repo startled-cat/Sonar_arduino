@@ -43,10 +43,12 @@ class Ui(QtWidgets.QMainWindow):
 
         self.pomiar = None
         self.pomiar_morph = None
+        self.data = None
         self.x_list = None
         self.y_list = None
 
         self.setWindowTitle("Bonar")
+        self.setWindowIcon(QtGui.QIcon('bonar-icon2.png'))
 
         self.setUi()
         self.disable_all()
@@ -113,11 +115,11 @@ class Ui(QtWidgets.QMainWindow):
         self.display2dGraphMorph.setEnabled(False)
         self.approxSetParam.setEnabled(False)  
         self.morphSetParam.setEnabled(False)
-
+        
     def enable_graph_opt(self):
         self.display2dGraph.setEnabled(True)
         self.display3dGraph.setEnabled(True)
-        self.approxSetParam.setEnabled(True)  
+        self.approxSetParam.setEnabled(True)
         self.morphSetParam.setEnabled(True)   
 
     def enable_all(self):
@@ -198,6 +200,7 @@ class Ui(QtWidgets.QMainWindow):
         self.connectButton.setEnabled(True)
         self.exitButton.setEnabled(True)
         self.typeBox.setEnabled(True)
+        self.dimension_choice()
 
     def dimension_choice(self):
         if self.typeBox.currentText() == "2D":
@@ -220,9 +223,7 @@ class Ui(QtWidgets.QMainWindow):
             self.pomiar = Pomiar.load_pickle(filename)
             self.pomiar.calculate_all()
             self.create_graph()
-            self.typeBox.setEnabled(True)
             self.enable_graph_opt()
-            self.dimension_choice()
 
         self.setWindowTitle("Bonar - " + filename)
 
@@ -308,7 +309,7 @@ class Ui(QtWidgets.QMainWindow):
 
     def create_graph2d(self):
         self.MplWidget2d.canvas.axes.clear()
-        self.MplWidget2d.canvas.axes.plot(self.pomiar.x_list, self.pomiar.y_list, '.')
+        self.MplWidget2d.canvas.axes.plot(self.pomiar.x_list[:179], self.pomiar.y_list[:179], '.')
         
         # Data for two-dimensional scattered points
         self.MplWidget2d.canvas.axes.set_xlabel('x axis')
@@ -318,7 +319,7 @@ class Ui(QtWidgets.QMainWindow):
 
     def create_graph2d_morph(self):
         self.MplWidget2dmorf.canvas.axes.clear()
-        self.MplWidget2dmorf.canvas.axes.plot(self.pomiar.x_list, self.pomiar.y_list, '.')
+        self.MplWidget2dmorf.canvas.axes.plot(self.pomiar.x_list[:179], self.pomiar.y_list[:179], '.')
         
         # Data for two-dimensional scattered points (1st graph)
         self.MplWidget2dmorf.canvas.axes.set_xlabel('x axis')
@@ -363,6 +364,8 @@ class Ui(QtWidgets.QMainWindow):
         for point in self.pomiar.points_list:
             img[:int(point.d), i] = 1
             i += 1
+            if i == 180:
+                break
 
         # Odwróć obraz
         img = np.flip(img, 0)
@@ -393,6 +396,8 @@ class Ui(QtWidgets.QMainWindow):
             j += 1
             
         self.pomiar_morph.calculate_all()
+        print(self.pomiar_morph.y_list)
+
 
     def exit(self):
         print("exiting...")
